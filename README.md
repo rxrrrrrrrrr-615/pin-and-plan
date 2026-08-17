@@ -1,4 +1,5 @@
 📍 Pin & Plan
+
 A trip-planning tool that lets you pin the places you want to visit directly on a map, attach your own research (notes, links, screenshots) to each pin, and get a suggested walking order automatically — instead of bouncing between a map app, a notes app, and a spreadsheet.
 
 Why this exists
