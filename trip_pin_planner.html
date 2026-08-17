@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pin & Plan — My Trip Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Quicksand:wght@500;600;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff5c8a; --pink-dark:#e13d6c; --pink-pale:#ffe3ed;
+    --orange:#ff9d4d; --orange-pale:#ffe9d1;
+    --teal:#1fb6c9; --teal-pale:#d7f5f7;
+    --yellow:#ffcb3d; --yellow-pale:#fff2cf;
+    --purple:#9b7ff0; --purple-pale:#ece5ff;
+    --bg:#fbf3e7; --card:#fffdf9;
+    --ink:#3a2b26; --muted:#75625a; --line:#3a2b26;
+    --amap:#00a6fb; --baidu:#2f5fea; --gmap:#34a853;
+    --sticker-shadow:2.5px 3px 0 var(--ink);
+    --focus-ring:0 0 0 3px rgba(31,182,201,.35);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Quicksand','ZCOOL KuaiLe',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-weight:500;}
+  button, input, textarea{font-size:100%;}
+  button{min-height:36px;}
+  :focus-visible{outline:none;box-shadow:var(--focus-ring);}
+  #app{display:flex;height:100vh;}
+  #sidebar{width:400px;min-width:360px;background:var(--card);border-right:3px solid var(--ink);display:flex;flex-direction:column;overflow:hidden;}
+  #map{flex:1;position:relative;}
+  header{padding:16px 18px 12px;border-bottom:3px solid var(--ink);background:linear-gradient(180deg,var(--yellow-pale),var(--card) 70%);flex-shrink:0;}
+  header h1{font-family:'Baloo 2',cursive;font-size:20px;margin:0 0 2px;letter-spacing:.2px;}
+  header p{margin:0;font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.5;}
+
+  /* ---- trip + day chip bars ---- */
+  .chipbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:2px solid #f0e4d4;flex-shrink:0;}
+  .chipbar-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;writing-mode:horizontal-tb;}
+  .chipbar-scroll{display:flex;gap:6px;overflow-x:auto;flex:1;padding:2px;scrollbar-width:thin;}
+  .tab-chip{border:2px solid var(--ink);border-radius:14px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);white-space:nowrap;font-family:inherit;flex-shrink:0;display:flex;align-items:center;gap:5px;min-height:34px;}
+  .tab-chip.active{background:var(--purple);color:#fff;box-shadow:var(--sticker-shadow);}
+  .tab-chip .date-label{font-size:10px;opacity:.75;font-weight:600;}
+  .chip-add{border:2px dashed var(--ink);border-radius:14px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--ink);white-space:nowrap;font-family:inherit;flex-shrink:0;min-height:34px;}
+  .chip-add:hover{background:var(--teal-pale);}
+
+  /* ---- collapsible search / browse section ---- */
+  .section{border-bottom:2px solid #f0e4d4;flex-shrink:0;}
+  .section-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;color:var(--ink);}
+  .section-toggle .chevron{transition:transform .15s;font-size:11px;color:var(--muted);}
+  .section-toggle[aria-expanded="true"] .chevron{transform:rotate(180deg);}
+  .section-body{padding:0 16px 12px;}
+  .section-body.hidden{display:none;}
+
+  .searchbox input{width:100%;padding:11px 13px;border:2px solid var(--ink);border-radius:14px;font-size:13px;font-family:inherit;font-weight:600;background:var(--card);}
+  .searchbox input:focus-visible{border-color:var(--teal);}
+  .searchresults{max-height:170px;overflow-y:auto;font-size:12.5px;margin-top:6px;}
+  .searchresults div{padding:8px 10px;cursor:pointer;border-radius:10px;font-weight:600;}
+  .searchresults div:hover, .searchresults div:focus-visible{background:var(--pink-pale);}
+
+  #pinlistWrap{flex:1;overflow-y:auto;padding:12px;min-height:0;}
+  .section-label{margin:2px 4px 10px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  .section-label .sub{font-weight:600;color:var(--muted);font-size:11.5px;}
+  .pin-card{background:var(--card);border:2.5px solid var(--ink);border-radius:16px;padding:12px 14px;margin-bottom:14px;position:relative;box-shadow:var(--sticker-shadow);}
+  .pin-card .idx{position:absolute;top:-12px;left:-10px;color:#fff;width:26px;height:26px;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid var(--ink);font-family:'Baloo 2',cursive;}
+  .pin-card .remove-x{position:absolute;top:-11px;right:-9px;width:24px;height:24px;border-radius:50%;background:var(--pink-pale);color:var(--pink-dark);border:2px solid var(--ink);font-weight:800;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;min-height:auto;}
+  .pin-card .remove-x:hover{background:var(--pink);color:#fff;}
+  .pin-hours{font-size:11px;color:var(--muted);font-weight:600;margin:2px 0 6px;display:flex;align-items:center;gap:4px;}
+  .pin-title{font-weight:700;font-size:14.5px;display:flex;justify-content:space-between;gap:6px;}
+  .pin-title input{border:none;background:transparent;font-weight:700;font-size:14.5px;width:100%;font-family:inherit;min-height:auto;}
+  .pin-title input:focus-visible{outline:none;box-shadow:none;text-decoration:underline;text-decoration-color:var(--teal);}
+  .pin-meta{font-size:11px;color:var(--muted);margin:2px 0 8px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .pin-meta select{border:1.5px solid var(--line);border-radius:8px;font-size:10.5px;font-weight:700;padding:2px 4px;font-family:inherit;background:var(--card);min-height:24px;}
+  .pin-card textarea{width:100%;font-size:12.5px;border:2px solid #f0e4d4;border-radius:10px;padding:8px;resize:vertical;min-height:42px;font-family:inherit;font-weight:500;background:#fffaf2;}
+  .pin-card textarea:focus-visible{border-color:var(--teal);}
+  .pin-card input.link{width:100%;font-size:12.5px;border:2px solid #f0e4d4;border-radius:10px;padding:8px;margin-top:6px;font-family:inherit;background:#fffaf2;}
+  .pin-card input.link:focus-visible{border-color:var(--teal);}
+  .row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .row button, .navbtn{border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-size:11px;cursor:pointer;color:var(--ink);font-weight:700;font-family:inherit;min-height:32px;}
+  .navbtn.gmap{background:#c9f0d3;} .navbtn.amap{background:#c8ecfb;} .navbtn.baidu{background:#cdd8fb;}
+  .del{background:var(--pink-pale);color:var(--pink-dark);}
+  .imgprev{max-width:100%;border-radius:10px;margin-top:8px;display:block;border:2px solid var(--ink);}
+  .fileinput{font-size:10px;margin-top:8px;font-weight:600;}
+  #toolbar{padding:12px 16px;border-top:3px solid var(--ink);display:flex;gap:8px;flex-wrap:wrap;background:var(--card);flex-shrink:0;}
+  #toolbar button{flex:1;min-width:110px;background:var(--pink);color:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px;font-size:12.5px;cursor:pointer;font-weight:700;font-family:'Baloo 2',cursive;box-shadow:var(--sticker-shadow);}
+  #toolbar button.secondary{background:var(--card);color:var(--ink);}
+  #summary{padding:10px 16px 2px;border-top:2px solid #f0e4d4;flex-shrink:0;}
+  .stat-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .stat-pill{display:flex;align-items:center;gap:5px;border:2px solid var(--ink);border-radius:12px;padding:5px 10px;font-size:11.5px;font-weight:700;}
+  .empty{padding:34px 18px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;line-height:1.6;}
+  #aiPanel{position:absolute;bottom:22px;right:22px;width:330px;background:var(--card);border-radius:16px;border:2.5px solid var(--ink);box-shadow:var(--sticker-shadow);display:none;flex-direction:column;max-height:70vh;height:480px;z-index:1000;}
+  #aiPanel.open{display:flex;}
+  #aiHead{padding:12px 14px;border-bottom:2px solid #f0e4d4;font-size:13.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-family:'Baloo 2',cursive;background:var(--purple-pale);border-radius:14px 14px 0 0;flex-shrink:0;}
+  #aiHead .head-btns{display:flex;gap:4px;}
+  #aiHead button{background:none;border:none;font-size:15px;cursor:pointer;min-height:auto;padding:2px 4px;}
+  #aiTips{padding:10px 14px 0;flex-shrink:0;max-height:120px;overflow-y:auto;}
+  #aiTips .tip{background:var(--yellow-pale);border:1.5px solid #eed9a0;border-radius:10px;padding:8px 10px;margin-bottom:7px;font-size:11.5px;line-height:1.5;}
+  #aiSettings{padding:10px 14px;border-bottom:2px solid #f0e4d4;flex-shrink:0;display:none;}
+  #aiSettings.open{display:block;}
+  #aiSettings label{font-size:11px;font-weight:700;display:block;margin:6px 0 3px;}
+  #aiSettings select, #aiSettings input{width:100%;padding:6px 8px;border:1.5px solid var(--ink);border-radius:8px;font-size:11.5px;font-family:inherit;}
+  #aiSettings p{font-size:10px;color:var(--muted);line-height:1.4;margin:6px 0 0;}
+  #aiSettings .save-key{margin-top:8px;width:100%;background:var(--teal);color:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:6px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  #chatLog{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+  .chat-msg{max-width:88%;padding:8px 11px;border-radius:12px;font-size:12px;line-height:1.5;font-weight:500;}
+  .chat-msg.user{align-self:flex-end;background:var(--teal-pale);border:1.5px solid #a9dfe4;}
+  .chat-msg.bot{align-self:flex-start;background:#f2ece2;border:1.5px solid #e6dccb;}
+  #chatForm{display:flex;gap:6px;padding:10px 14px;border-top:2px solid #f0e4d4;flex-shrink:0;}
+  #chatInput{flex:1;padding:8px 10px;border:2px solid var(--ink);border-radius:10px;font-size:12px;font-family:inherit;}
+  #chatForm button{background:var(--pink);color:#fff;border:2px solid var(--ink);border-radius:10px;padding:0 12px;font-size:14px;cursor:pointer;}
+  #aiToggle{position:absolute;bottom:22px;right:22px;width:54px;height:54px;border-radius:50%;background:var(--purple);color:#fff;border:2.5px solid var(--ink);font-size:22px;cursor:pointer;box-shadow:var(--sticker-shadow);z-index:1001;}
+  a{color:var(--pink-dark);}
+
+  /* location badge over the map */
+  #locBadge{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--card);border:2.5px solid var(--ink);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:var(--sticker-shadow);z-index:1200;display:flex;align-items:center;gap:6px;font-family:'Baloo 2',cursive;min-height:34px;}
+  #locBadge:hover{background:var(--yellow-pale);}
+
+  /* onboarding + location-picker / day-date modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(58,43,38,.5);display:flex;align-items:center;justify-content:center;z-index:2000;}
+  .modal-overlay.hidden{display:none;}
+  .modal-card{background:var(--card);border-radius:20px;border:3px solid var(--ink);padding:26px;width:340px;max-width:90vw;box-shadow:6px 6px 0 var(--ink);}
+  .modal-card h2{margin:0 0 4px;font-size:18px;font-family:'Baloo 2',cursive;}
+  .modal-card p{margin:0 0 16px;font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.5;}
+  .modal-card input{width:100%;padding:10px 12px;border:2px solid var(--ink);border-radius:12px;font-size:13px;margin-bottom:8px;font-family:inherit;font-weight:600;}
+  .modal-card input:focus-visible{border-color:var(--teal);}
+  .modal-card .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px;}
+  .modal-card .chips button{border:2px solid var(--ink);background:var(--teal-pale);border-radius:14px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .modal-card .chips button:hover{background:var(--pink-pale);}
+  .modal-card .skip-link{display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--muted);cursor:pointer;font-weight:600;text-decoration:underline;background:none;border:none;width:100%;}
+  .modal-card .primary-btn{width:100%;background:var(--pink);color:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Baloo 2',cursive;box-shadow:var(--sticker-shadow);margin-top:4px;}
+  .modal-results{max-height:150px;overflow-y:auto;font-size:12.5px;margin-bottom:10px;}
+  .modal-results div{padding:8px 10px;cursor:pointer;border-radius:10px;font-weight:600;}
+  .modal-results div:hover{background:var(--pink-pale);}
+
+  /* category browse */
+  #categoryChips{display:flex;flex-wrap:wrap;gap:7px;}
+  #categoryChips button{border:2px solid var(--ink);border-radius:14px;padding:7px 12px;font-size:12px;cursor:pointer;font-weight:700;font-family:inherit;min-height:34px;}
+  #categoryChips button.active{color:#fff;box-shadow:var(--sticker-shadow);}
+  #categoryResults{max-height:190px;overflow-y:auto;font-size:12.5px;margin-top:9px;}
+  #categoryResults .catplace{padding:8px 9px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:6px;font-weight:600;}
+  #categoryResults .catplace:hover{background:var(--yellow-pale);}
+  #categoryResults .catplace button{border:2px solid var(--ink);background:var(--pink);color:#fff;border-radius:10px;padding:5px 10px;font-size:11px;cursor:pointer;flex-shrink:0;font-weight:700;font-family:inherit;}
+  #categoryResults .catname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  @media (max-width: 760px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;min-width:0;height:55vh;border-right:none;border-bottom:3px solid var(--ink);}
+    #map{height:45vh;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <header>
+      <h1>📍 Pin &amp; Plan</h1>
+      <p>search · pin · attach your 攻略 · optimize the walk ✨</p>
+    </header>
+
+    <div class="chipbar" role="tablist" aria-label="Your trips">
+      <span class="chipbar-label">Trip</span>
+      <div class="chipbar-scroll" id="tripChips"></div>
+      <button class="chip-add" id="addTripBtn" aria-label="Create a new trip">+ Trip</button>
+    </div>
+
+    <div class="chipbar" role="tablist" aria-label="Days in this trip">
+      <span class="chipbar-label">Day</span>
+      <div class="chipbar-scroll" id="dayChips"></div>
+      <button class="chip-add" id="addDayBtn" aria-label="Add a day">+ Day</button>
+    </div>
+
+    <div class="section searchbox">
+      <div style="padding:12px 16px 0;">
+        <label for="searchInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a place</label>
+        <input id="searchInput" placeholder="Search a place, in any language (starbucks / 星巴克 / an address)…" />
+        <div class="searchresults" id="searchResults" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <button class="section-toggle" id="browseToggle" aria-expanded="false" aria-controls="browseBody">
+        <span>🗺️ Browse nearby places</span>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="section-body hidden" id="browseBody">
+        <div id="categoryChips"></div>
+        <div id="categoryResults" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div id="pinlistWrap">
+      <div class="section-label">📋 <span id="dayLabel">Stops</span></div>
+      <div id="pinlist"></div>
+    </div>
+    <div id="summary"></div>
+    <div id="toolbar">
+      <button id="optimizeBtn">🔄 Recalculate route</button>
+      <button id="exportBtn" class="secondary">Export trip (.json)</button>
+      <button id="clearAllBtn" class="secondary">Clear this day</button>
+    </div>
+  </div>
+  <div id="map">
+    <div id="locBadge">🌍 <span id="locBadgeText">Choose a country/city</span> <span style="opacity:.5;">▾</span></div>
+  </div>
+  <button id="aiToggle" title="Trip assistant" aria-label="Open trip assistant">💬</button>
+  <div id="aiPanel">
+    <div id="aiHead">
+      Trip assistant
+      <div class="head-btns">
+        <button id="aiSettingsToggle" aria-label="AI settings" title="AI settings">⚙️</button>
+        <button id="aiClose" aria-label="Close trip assistant" title="Close">✕</button>
+      </div>
+    </div>
+    <div id="aiSettings">
+      <label for="aiProvider">AI provider</label>
+      <select id="aiProvider">
+        <option value="">None — use built-in local assistant</option>
+        <option value="openai">OpenAI (bring your own key)</option>
+        <option value="anthropic">Anthropic (bring your own key)</option>
+      </select>
+      <label for="aiKeyInput">API key</label>
+      <input type="password" id="aiKeyInput" placeholder="Paste your API key…" autocomplete="off" />
+      <button type="button" class="save-key" id="aiKeySave">Save</button>
+      <p>Optional. Your key is stored only in this browser and sent directly from your browser to the provider you chose — never through any server of ours. Leave this blank to keep using the built-in local assistant (no real AI, just distance/timing heuristics).</p>
+    </div>
+    <div id="aiTips"></div>
+    <div id="chatLog" aria-live="polite"></div>
+    <form id="chatForm">
+      <label for="chatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Ask the trip assistant</label>
+      <input id="chatInput" placeholder="Ask about your plan…" autocomplete="off" />
+      <button type="submit" aria-label="Send">➤</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="locModal">
+  <div class="modal-card">
+    <h2>Where are you planning for?</h2>
+    <p>Search any country or city, in any language. You can change this anytime from the badge on the map.</p>
+    <label for="locModalInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a city</label>
+    <input id="locModalInput" placeholder="e.g. Toronto, 成都, Paris…" />
+    <div class="modal-results" id="locModalResults" aria-live="polite"></div>
+    <div class="chips" id="locModalQuick"></div>
+    <button type="button" class="skip-link" id="locModalSkip">Skip — I'll just browse the world map</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="dayModal">
+  <div class="modal-card">
+    <h2 id="dayModalTitle">Add a day</h2>
+    <p>Give this day an optional date so your plan is easier to follow.</p>
+    <label for="dayModalDate" style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Date (optional)</label>
+    <input type="date" id="dayModalDate" />
+    <button type="button" class="primary-btn" id="dayModalSave">Save</button>
+    <button type="button" class="skip-link" id="dayModalCancel">Cancel</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+function uid(){ return 'p' + Date.now() + Math.floor(Math.random()*1000); }
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+// STORE: multiple trips, each with multiple days, each pin belongs to one day
+// ============================================================
+const STORE_KEY = 'pinplan_store_v2';
+const LEGACY_KEY = 'pinplan_trip_v1';
+
+function newTrip(name){
+  return { id: uid(), name: name || 'My trip', days: [{id:1, date:''}], activeDay: 1, pins: [] };
+}
+
+function loadStore(){
+  const raw = localStorage.getItem(STORE_KEY);
+  if(raw){ try{ return JSON.parse(raw); }catch(e){ /* fall through to fresh store */ } }
+  const trip = newTrip('My trip');
+  const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null');
+  if(legacy && legacy.length){
+    trip.pins = legacy.map(p=>({...p, day: 1}));
+  }
+  return { trips:[trip], activeTripId: trip.id };
+}
+
+let store = loadStore();
+function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+function currentTrip(){ return store.trips.find(t=>t.id===store.activeTripId) || store.trips[0]; }
+function visiblePins(){
+  const trip = currentTrip();
+  return trip.activeDay==='all' ? trip.pins : trip.pins.filter(p=>p.day===trip.activeDay);
+}
+
+let routeLine = null;
+let routeOrder = null; // array of pin ids in optimized order, or null = pin list order
+
+// ============================================================
+// MAP
+// ============================================================
+const VIEW_KEY = 'pinplan_lastview_v1';
+const savedView = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
+const map = L.map('map').setView(
+  savedView ? savedView.center : [20, 10],
+  savedView ? savedView.zoom : 2
+); // no region hardcoded — starts at your last view, or a world view, then geolocates below
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+if(!savedView && navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(
+    pos => map.setView([pos.coords.latitude, pos.coords.longitude], 12),
+    () => {} // silently keep world view if permission denied
+  );
+}
+
+map.on('moveend', ()=>{
+  localStorage.setItem(VIEW_KEY, JSON.stringify({center: map.getCenter(), zoom: map.getZoom()}));
+});
+
+// ============================================================
+// Country/city selection: onboarding modal + badge
+// ============================================================
+const LOC_KEY = 'pinplan_location_v1';
+const QUICK_CITIES = [
+  {name:'Toronto', lat:43.6532, lng:-79.3832},
+  {name:'Vancouver', lat:49.2827, lng:-123.1207},
+  {name:'上海 Shanghai', lat:31.2304, lng:121.4737},
+  {name:'成都 Chengdu', lat:30.5728, lng:104.0668},
+  {name:'北京 Beijing', lat:39.9042, lng:116.4074},
+  {name:'New York', lat:40.7128, lng:-74.0060},
+  {name:'Paris', lat:48.8566, lng:2.3522},
+  {name:'Tokyo', lat:35.6762, lng:139.6503},
+];
+
+function setLocation(name, lat, lng, zoom){
+  localStorage.setItem(LOC_KEY, JSON.stringify({name, lat, lng}));
+  document.getElementById('locBadgeText').textContent = name;
+  map.setView([lat,lng], zoom || 12);
+}
+
+function openLocModal(){
+  document.getElementById('locModal').classList.remove('hidden');
+  document.getElementById('locModalInput').value='';
+  document.getElementById('locModalResults').innerHTML='';
+  document.getElementById('locModalInput').focus();
+}
+function closeLocModal(){ document.getElementById('locModal').classList.add('hidden'); }
+
+const quickWrap = document.getElementById('locModalQuick');
+quickWrap.innerHTML = QUICK_CITIES.map(c=>`<button type="button" data-lat="${c.lat}" data-lng="${c.lng}" data-name="${escapeHtml(c.name)}">${escapeHtml(c.name)}</button>`).join('');
+quickWrap.querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    setLocation(btn.dataset.name, parseFloat(btn.dataset.lat), parseFloat(btn.dataset.lng));
+    closeLocModal();
+  });
+});
+
+document.getElementById('locBadge').addEventListener('click', (e)=>{ e.stopPropagation(); openLocModal(); });
+document.getElementById('locModalSkip').addEventListener('click', closeLocModal);
+
+let locSearchTimer;
+document.getElementById('locModalInput').addEventListener('input', (e)=>{
+  clearTimeout(locSearchTimer);
+  const q = e.target.value.trim();
+  const resultsEl = document.getElementById('locModalResults');
+  if(q.length<2){ resultsEl.innerHTML=''; return; }
+  locSearchTimer = setTimeout(async ()=>{
+    try{
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=6&accept-language=en,zh-CN,zh,fr,es&featureType=city`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const data = await resp.json();
+      resultsEl.innerHTML = data.map(r=>`<div tabindex="0" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(r.display_name.split(',')[0])}">${escapeHtml(r.display_name)}</div>`).join('') || '<div style="color:#999;">No results — try a different spelling</div>';
+      resultsEl.querySelectorAll('div[data-lat]').forEach(div=>{
+        div.addEventListener('click', ()=>{
+          setLocation(div.dataset.name, parseFloat(div.dataset.lat), parseFloat(div.dataset.lng));
+          closeLocModal();
+        });
+      });
+    }catch(err){
+      console.error('Location search failed:', err);
+      resultsEl.innerHTML = '<div style="color:#999;">Search failed, try again</div>';
+    }
+  }, 400);
+});
+
+const savedLoc = JSON.parse(localStorage.getItem(LOC_KEY) || 'null');
+if(savedLoc){
+  document.getElementById('locBadgeText').textContent = savedLoc.name;
+} else {
+  openLocModal();
+}
+
+// ============================================================
+// Trip + day tab bars
+// ============================================================
+function renderTripChips(){
+  const wrap = document.getElementById('tripChips');
+  wrap.innerHTML = store.trips.map(t=>`
+    <button type="button" class="tab-chip ${t.id===store.activeTripId?'active':''}" role="tab" aria-selected="${t.id===store.activeTripId}" data-trip="${t.id}">
+      ${escapeHtml(t.name)}
+    </button>
+  `).join('');
+  wrap.querySelectorAll('[data-trip]').forEach(btn=>{
+    btn.addEventListener('click', ()=> switchTrip(btn.dataset.trip));
+    btn.addEventListener('dblclick', ()=> renameTrip(btn.dataset.trip));
+  });
+}
+
+function switchTrip(tripId){
+  store.activeTripId = tripId;
+  saveStore();
+  renderAll();
+}
+
+function renameTrip(tripId){
+  const trip = store.trips.find(t=>t.id===tripId);
+  const name = prompt('Rename this trip:', trip.name);
+  if(name && name.trim()){ trip.name = name.trim(); saveStore(); renderTripChips(); }
+}
+
+document.getElementById('addTripBtn').addEventListener('click', ()=>{
+  const name = prompt('Name your new trip (e.g. "Chengdu girls trip"):', 'New trip');
+  if(name===null) return;
+  const trip = newTrip(name.trim() || 'New trip');
+  store.trips.push(trip);
+  store.activeTripId = trip.id;
+  saveStore();
+  renderAll();
+});
+
+function renderDayChips(){
+  const trip = currentTrip();
+  const wrap = document.getElementById('dayChips');
+  wrap.innerHTML = trip.days.map(d=>`
+    <button type="button" class="tab-chip ${trip.activeDay===d.id?'active':''}" role="tab" aria-selected="${trip.activeDay===d.id}" data-day="${d.id}">
+      Day ${d.id}${d.date ? `<span class="date-label">${d.date}</span>` : ''}
+    </button>
+  `).join('') + `
+    <button type="button" class="tab-chip ${trip.activeDay==='all'?'active':''}" role="tab" aria-selected="${trip.activeDay==='all'}" data-day="all">All days</button>
+  `;
+  wrap.querySelectorAll('[data-day]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      trip.activeDay = btn.dataset.day==='all' ? 'all' : parseInt(btn.dataset.day,10);
+      saveStore();
+      renderAll();
+    });
+    btn.addEventListener('dblclick', ()=>{
+      if(btn.dataset.day==='all') return;
+      openDayModal(parseInt(btn.dataset.day,10));
+    });
+  });
+}
+
+let dayModalTargetId = null;
+function openDayModal(existingDayId){
+  dayModalTargetId = existingDayId || null;
+  const trip = currentTrip();
+  document.getElementById('dayModalTitle').textContent = existingDayId ? `Edit day ${existingDayId}` : 'Add a day';
+  const existing = existingDayId ? trip.days.find(d=>d.id===existingDayId) : null;
+  document.getElementById('dayModalDate').value = existing ? existing.date : '';
+  document.getElementById('dayModal').classList.remove('hidden');
+}
+document.getElementById('addDayBtn').addEventListener('click', ()=> openDayModal(null));
+document.getElementById('dayModalCancel').addEventListener('click', ()=> document.getElementById('dayModal').classList.add('hidden'));
+document.getElementById('dayModalSave').addEventListener('click', ()=>{
+  const trip = currentTrip();
+  const date = document.getElementById('dayModalDate').value;
+  if(dayModalTargetId){
+    const day = trip.days.find(d=>d.id===dayModalTargetId);
+    day.date = date;
+  } else {
+    const nextId = trip.days.length ? Math.max(...trip.days.map(d=>d.id))+1 : 1;
+    trip.days.push({id: nextId, date});
+    trip.activeDay = nextId;
+  }
+  saveStore();
+  document.getElementById('dayModal').classList.add('hidden');
+  renderAll();
+});
+
+// ============================================================
+// Collapsible "browse nearby" section
+// ============================================================
+document.getElementById('browseToggle').addEventListener('click', ()=>{
+  const btn = document.getElementById('browseToggle');
+  const body = document.getElementById('browseBody');
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!expanded));
+  body.classList.toggle('hidden');
+});
+
+// ============================================================
+// Category browse (Restaurants / Cafes / Shopping / Must-go / Bars) via Overpass API
+// ============================================================
+const CATEGORIES = [
+  {label:'🍜 Restaurants', tag:'"amenity"="restaurant"', pale:'#ffe9d1', solid:'#ff9d4d'},
+  {label:'☕ Cafes', tag:'"amenity"="cafe"', pale:'#f0e2d0', solid:'#a9754f'},
+  {label:'🛍️ Shopping', tag:'"shop"', pale:'#ffe3ed', solid:'#ff5c8a'},
+  {label:'⭐ Must-go', tag:'"tourism"~"attraction|museum|viewpoint|gallery"', pale:'#fff2cf', solid:'#ffb100'},
+  {label:'🍸 Bars', tag:'"amenity"="bar"', pale:'#ece5ff', solid:'#9b7ff0'},
+];
+
+const catChipsEl = document.getElementById('categoryChips');
+catChipsEl.innerHTML = CATEGORIES.map(c=>`<button type="button" data-tag='${c.tag}' data-label="${escapeHtml(c.label)}" style="background:${c.pale}" data-solid="${c.solid}" aria-pressed="false">${c.label}</button>`).join('');
+catChipsEl.querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const isActive = btn.classList.contains('active');
+    catChipsEl.querySelectorAll('button').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+    CATEGORIES.forEach((c,i)=>{ catChipsEl.children[i].style.background = c.pale; });
+    const resultsEl = document.getElementById('categoryResults');
+    if(isActive){ resultsEl.innerHTML=''; return; }
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed','true');
+    btn.style.background = btn.dataset.solid;
+    fetchCategoryPlaces(btn.dataset.tag, btn.dataset.label);
+  });
+});
+
+async function fetchCategoryPlaces(tag, label){
+  const resultsEl = document.getElementById('categoryResults');
+  if(map.getZoom() < 12){
+    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Zoom into a neighborhood on the map first, then tap ${label} again to see nearby spots.</div>`;
+    return;
+  }
+  resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Finding ${label.replace(/^\S+\s/,'')} nearby…</div>`;
+  const b = map.getBounds();
+  const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  const query = `[out:json][timeout:20];(node[${tag}](${bbox});way[${tag}](${bbox}););out center 25;`;
+  const endpoints = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://lz4.overpass-api.de/api/interpreter'
+  ];
+  let data = null, lastErr = null;
+  for(const url of endpoints){
+    try{
+      const resp = await fetch(`${url}?data=${encodeURIComponent(query)}`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      data = await resp.json();
+      break;
+    }catch(err){ lastErr = err; console.error('Overpass endpoint failed:', url, err); }
+  }
+  try{
+    if(!data) throw lastErr || new Error('All endpoints failed');
+    const center = map.getCenter();
+    const places = (data.elements||[])
+      .map(el=>{
+        const lat = el.lat || (el.center && el.center.lat);
+        const lng = el.lon || (el.center && el.center.lon);
+        const name = el.tags && (el.tags.name || el.tags['name:en']);
+        const hours = el.tags && el.tags.opening_hours;
+        if(!lat || !lng || !name) return null;
+        return {lat, lng, name, hours: hours||'', dist: haversine({lat:center.lat,lng:center.lng},{lat,lng})};
+      })
+      .filter(Boolean)
+      .sort((a,b)=>a.dist-b.dist)
+      .slice(0,20);
+    if(places.length===0){
+      resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">No named spots found in this view — try zooming out slightly or panning.</div>`;
+      return;
+    }
+    resultsEl.innerHTML = places.map((p,i)=>`
+      <div class="catplace">
+        <span class="catname" title="${escapeHtml(p.name)}">${escapeHtml(p.name)} <span style="color:#bbb;">· ${(p.dist/1000).toFixed(1)}km${p.hours ? ' · 🕐 '+escapeHtml(p.hours) : ''}</span></span>
+        <button type="button" data-i="${i}">Pin</button>
+      </div>
+    `).join('');
+    resultsEl.querySelectorAll('button[data-i]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const p = places[btn.dataset.i];
+        addPin(p.lat, p.lng, p.name, p.hours);
+        btn.textContent = 'Pinned ✓';
+        btn.disabled = true;
+      });
+    });
+  }catch(err){
+    console.error('Category browse failed:', err);
+    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Couldn't load nearby places — check your connection and try again.</div>`;
+  }
+}
+
+// ============================================================
+// Pins, markers, routing
+// ============================================================
+const markers = {};
+const PIN_COLORS = ['#ff5c8a','#ff9d4d','#1fb6c9','#9b7ff0','#ffb100'];
+
+function addPin(lat, lng, name, hours){
+  const trip = currentTrip();
+  const pin = {
+    id: uid(), lat, lng,
+    name: name || 'New spot',
+    notes: '', link: '', image: '', hours: hours || '',
+    day: trip.activeDay==='all' ? (trip.days[0] ? trip.days[0].id : 1) : trip.activeDay,
+    createdAt: Date.now()
+  };
+  trip.pins.push(pin);
+  saveStore();
+  refreshRoute();
+}
+
+// Recomputes the smart walking order for whatever pins are visible right now (the current
+// day, or the whole trip if "All days" is selected) and redraws the numbered markers + route
+// line to match. Runs automatically any time pins change, so the numbers on the map always
+// reflect the suggested visiting order rather than just the order pins were dropped in.
+async function refreshRoute(){
+  const vis = visiblePins();
+  routeOrder = vis.length>=2 ? nearestNeighborOrder(vis) : null;
+  renderAllMarkers();
+  renderList();
+  const ordered = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
+  await drawRouteLine(ordered);
+}
+
+function renderMarker(pin, idx){
+  const pinColor = PIN_COLORS[idx % PIN_COLORS.length];
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="background:${pinColor};color:#fff;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2.5px solid #3a2b26;box-shadow:2px 2px 0 #3a2b26;">
+             <span style="transform:rotate(45deg);font-size:12px;font-weight:700;font-family:'Baloo 2',cursive;">${idx+1}</span>
+           </div>`,
+    iconSize:[28,28], iconAnchor:[14,28]
+  });
+  if(markers[pin.id]) map.removeLayer(markers[pin.id]);
+  const m = L.marker([pin.lat, pin.lng], {icon, draggable:true}).addTo(map);
+  m.bindPopup(`<b style="font-family:'Baloo 2',cursive;">${escapeHtml(pin.name)}</b>`);
+  m.on('dragend', (e)=>{
+    const {lat,lng} = e.target.getLatLng();
+    pin.lat = lat; pin.lng = lng;
+    saveStore(); refreshRoute();
+  });
+  markers[pin.id] = m;
+}
+
+function renderAllMarkers(){
+  Object.values(markers).forEach(m=>map.removeLayer(m));
+  for(const k in markers) delete markers[k];
+  const order = routeOrder ? routeOrder.map(id=>visiblePins().find(p=>p.id===id)).filter(Boolean) : visiblePins();
+  order.forEach((p,i)=>renderMarker(p,i));
+}
+
+function navUrl(service, pin){
+  const {lat,lng,name} = pin;
+  if(service==='gmap') return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  if(service==='amap') return `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}&src=pinplan&coordinate=gaode&callnative=1`;
+  if(service==='baidu') return `https://api.map.baidu.com/marker?location=${lat},${lng}&title=${encodeURIComponent(name)}&content=${encodeURIComponent(name)}&output=html&src=pinplan`;
+}
+
+function renderDayLabel(){
+  const trip = currentTrip();
+  const el = document.getElementById('dayLabel');
+  if(trip.activeDay==='all'){
+    el.innerHTML = `Stops <span class="sub">· all days · ${trip.pins.length} total</span>`;
+  } else {
+    const day = trip.days.find(d=>d.id===trip.activeDay);
+    el.innerHTML = `Stops <span class="sub">· Day ${trip.activeDay}${day && day.date ? ' · '+day.date : ''}</span>`;
+  }
+}
+
+function renderList(){
+  renderDayLabel();
+  const trip = currentTrip();
+  const list = document.getElementById('pinlist');
+  const vis = visiblePins();
+  const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
+  if(order.length===0){
+    list.innerHTML = `<div class="empty">No pins for this day yet. Search a place above, browse nearby, or click anywhere on the map to drop one. 🗺️</div>`;
+    updateSummary();
+    return;
+  }
+  const showDaySelect = trip.days.length > 1;
+  list.innerHTML = order.map((pin, i)=>`
+    <div class="pin-card" data-id="${pin.id}">
+      <div class="idx" style="background:${PIN_COLORS[i % PIN_COLORS.length]}">${i+1}</div>
+      <button type="button" class="remove-x" data-del="1" aria-label="Remove ${escapeHtml(pin.name)}" title="Remove this pin">✕</button>
+      <div class="pin-title"><input value="${escapeHtml(pin.name)}" data-field="name" aria-label="Place name" /></div>
+      <div class="pin-meta">
+        <span>${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}</span>
+        ${showDaySelect ? `<label>day <select data-field="day" aria-label="Move to day">${trip.days.map(d=>`<option value="${d.id}" ${d.id===pin.day?'selected':''}>${d.id}</option>`).join('')}</select></label>` : ''}
+      </div>
+      <div class="pin-hours">🕐 ${escapeHtml(pin.hours) || 'Hours not listed'}</div>
+      <textarea placeholder="Paste your 攻略 notes here (tips, must-try items, best time to go)…" data-field="notes" aria-label="Notes for this place">${escapeHtml(pin.notes)}</textarea>
+      <input class="link" placeholder="Paste a 小红书/blog link…" value="${escapeHtml(pin.link)}" data-field="link" aria-label="Link for this place" />
+      <label class="fileinput">📷 Attach a screenshot
+        <input type="file" style="display:block;margin-top:4px;" data-field="image" accept="image/*" />
+      </label>
+      ${pin.image ? `<img class="imgprev" src="${pin.image}" alt="Attached screenshot for ${escapeHtml(pin.name)}" />` : ''}
+      <div class="row">
+        <button class="navbtn gmap" data-nav="gmap">Google Maps</button>
+        <button class="navbtn amap" data-nav="amap">高德 Amap</button>
+        <button class="navbtn baidu" data-nav="baidu">百度地图</button>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.pin-card').forEach(card=>{
+    const id = card.dataset.id;
+    const pin = trip.pins.find(p=>p.id===id);
+    card.querySelectorAll('[data-field]').forEach(el=>{
+      const field = el.dataset.field;
+      if(field==='image'){
+        el.addEventListener('change', (e)=>{
+          const file = e.target.files[0];
+          if(!file) return;
+          const reader = new FileReader();
+          reader.onload = ()=>{ pin.image = reader.result; saveStore(); renderList(); };
+          reader.readAsDataURL(file);
+        });
+      } else if(field==='day'){
+        el.addEventListener('change', (e)=>{
+          pin.day = parseInt(e.target.value,10);
+          saveStore();
+          refreshRoute();
+        });
+      } else {
+        el.addEventListener('input', (e)=>{
+          pin[field] = e.target.value;
+          saveStore();
+          if(field==='name'){ renderAllMarkers(); }
+        });
+      }
+    });
+    card.querySelectorAll('[data-nav]').forEach(btn=>{
+      btn.addEventListener('click', ()=> window.open(navUrl(btn.dataset.nav, pin), '_blank'));
+    });
+    card.querySelector('[data-del]').addEventListener('click', ()=>{
+      trip.pins = trip.pins.filter(p=>p.id!==id);
+      saveStore();
+      refreshRoute();
+    });
+  });
+  updateSummary();
+}
+
+// ---- Route optimization: nearest-neighbor heuristic starting from pin 1 ----
+function haversine(a, b){
+  const R = 6371000;
+  const toRad = d=>d*Math.PI/180;
+  const dLat = toRad(b.lat-a.lat), dLng = toRad(b.lng-a.lng);
+  const la1 = toRad(a.lat), la2 = toRad(b.lat);
+  const h = Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+function nearestNeighborOrder(list){
+  if(list.length<=2) return list.map(p=>p.id);
+  const remaining = [...list];
+  const route = [remaining.shift()];
+  while(remaining.length){
+    const last = route[route.length-1];
+    let bestIdx=0, bestDist=Infinity;
+    remaining.forEach((p,i)=>{
+      const d = haversine(last,p);
+      if(d<bestDist){ bestDist=d; bestIdx=i; }
+    });
+    route.push(remaining.splice(bestIdx,1)[0]);
+  }
+  return route.map(p=>p.id);
+}
+
+function totalDistance(orderedPins){
+  let d=0;
+  for(let i=0;i<orderedPins.length-1;i++) d += haversine(orderedPins[i], orderedPins[i+1]);
+  return d;
+}
+
+function updateSummary(){
+  const el = document.getElementById('summary');
+  const vis = visiblePins();
+  if(vis.length===0){ el.innerHTML=''; return; }
+  const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
+  const dist = totalDistance(order);
+  const walkMin = Math.round(dist/1000/4.5*60); // ~4.5km/h walking pace
+  const withGuide = order.filter(p=>p.notes || p.link || p.image).length;
+  el.innerHTML = `<div class="stat-row">
+    <span class="stat-pill" style="background:var(--pink-pale)">📍 ${vis.length} pin${vis.length>1?'s':''}</span>
+    <span class="stat-pill" style="background:var(--teal-pale)">🚶 ${(dist/1000).toFixed(1)} km</span>
+    <span class="stat-pill" style="background:var(--orange-pale)">⏱️ ~${walkMin} min walk</span>
+    <span class="stat-pill" style="background:var(--yellow-pale)">📝 ${withGuide}/${order.length} have 攻略</span>
+  </div>`;
+}
+
+async function drawRouteLine(orderedPins){
+  clearRouteLine();
+  if(orderedPins.length<2) return;
+  const coords = orderedPins.map(p=>`${p.lng},${p.lat}`).join(';');
+  try{
+    const resp = await fetch(`https://router.project-osrm.org/route/v1/foot/${coords}?overview=full&geometries=geojson`);
+    const data = await resp.json();
+    if(data.routes && data.routes[0]){
+      const latlngs = data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+      routeLine = L.polyline(latlngs, {color:'#ff5c8a', weight:4, opacity:0.9}).addTo(map);
+      map.fitBounds(routeLine.getBounds(), {padding:[40,40]});
+      return;
+    }
+  }catch(e){ /* fall through to straight-line fallback below */ }
+  const latlngs = orderedPins.map(p=>[p.lat,p.lng]);
+  routeLine = L.polyline(latlngs, {color:'#ff5c8a', weight:3, opacity:0.75, dashArray:'6,6'}).addTo(map);
+  map.fitBounds(routeLine.getBounds(), {padding:[40,40]});
+}
+
+function clearRouteLine(){
+  if(routeLine){ map.removeLayer(routeLine); routeLine=null; }
+}
+
+// The walking order recalculates automatically whenever pins change (see refreshRoute),
+// so this button is a manual "force recalculate" for reassurance — e.g. right after
+// dragging several pins around — rather than the only way to get an optimized route.
+document.getElementById('optimizeBtn').addEventListener('click', async ()=>{
+  const vis = visiblePins();
+  if(vis.length<2){ alert('Add at least 2 pins to this day first.'); return; }
+  await refreshRoute();
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', ()=>{
+  const trip = currentTrip();
+  const scoped = trip.activeDay !== 'all';
+  const msg = scoped ? `Remove all pins from Day ${trip.activeDay}? This cannot be undone.` : 'Remove ALL pins from this entire trip? This cannot be undone.';
+  if(!confirm(msg)) return;
+  trip.pins = scoped ? trip.pins.filter(p=>p.day!==trip.activeDay) : [];
+  saveStore();
+  refreshRoute();
+});
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const trip = currentTrip();
+  const blob = new Blob([JSON.stringify(trip, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${trip.name.replace(/[^\w\-]+/g,'_')}.json`;
+  a.click();
+});
+
+// Click map to drop a pin
+map.on('click', (e)=>{
+  addPin(e.latlng.lat, e.latlng.lng, 'New spot');
+});
+
+// Search via Nominatim (free, no key)
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  clearTimeout(searchTimer);
+  const q = e.target.value.trim();
+  const resultsEl = document.getElementById('searchResults');
+  if(q.length<2){ resultsEl.innerHTML=''; return; }
+  searchTimer = setTimeout(async ()=>{
+    try{
+      // accept-language goes in the querystring, not a request header — a custom header
+      // forces a CORS preflight (OPTIONS) request that Nominatim doesn't handle, which is
+      // what was causing "search failed" for every query regardless of language.
+      //
+      // viewbox+bounded=1 hard-restricts results to a box around wherever the map is
+      // currently centered, roughly province/state-sized, so searching "starbucks" doesn't
+      // surface a Starbucks in a different city or country with the same name.
+      const center = map.getCenter();
+      const delta = 1.3; // ~ province/state-sized radius in degrees
+      const viewbox = `${center.lng-delta},${center.lat+delta},${center.lng+delta},${center.lat-delta}`;
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=8&accept-language=en,zh-CN,zh,fr,es&addressdetails=1&extratags=1&viewbox=${viewbox}&bounded=1`);
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const data = await resp.json();
+      resultsEl.innerHTML = data.map(r=>{
+        const hours = r.extratags && r.extratags.opening_hours;
+        return `<div tabindex="0" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(r.display_name.split(',')[0])}" data-hours="${escapeHtml(hours||'')}">${escapeHtml(r.display_name)}${hours ? `<br><span style="color:#999;font-size:10.5px;">🕐 ${escapeHtml(hours)}</span>` : ''}</div>`;
+      }).join('') || '<div style="color:#999;">No results in this area — try zooming the map out, or pick a different city from the badge above</div>';
+      resultsEl.querySelectorAll('div[data-lat]').forEach(div=>{
+        div.addEventListener('click', ()=>{
+          const lat=parseFloat(div.dataset.lat), lng=parseFloat(div.dataset.lng);
+          addPin(lat,lng,div.dataset.name,div.dataset.hours);
+          map.setView([lat,lng], 15);
+          resultsEl.innerHTML=''; document.getElementById('searchInput').value='';
+        });
+      });
+    }catch(err){
+      console.error('Place search failed:', err);
+      resultsEl.innerHTML = '<div style="color:#999;">Search failed — check your internet connection, or try again in a moment</div>';
+    }
+  }, 400);
+});
+
+// ============================================================
+// Trip assistant: interactive chat, with an optional bring-your-own API key
+// for real AI answers. Without a key it falls back to a local Q&A heuristic —
+// still interactive, just not a real language model.
+// ============================================================
+const AI_KEY_STORE = 'pinplan_ai_key_v1';
+let aiConfig = JSON.parse(localStorage.getItem(AI_KEY_STORE) || 'null') || {provider:'', key:''};
+let chatHistory = []; // {role:'user'|'bot', text}
+
+document.getElementById('aiToggle').addEventListener('click', ()=>{
+  const panel = document.getElementById('aiPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    renderAiTips();
+    if(chatHistory.length===0){
+      addChatMessage('bot', aiConfig.key
+        ? "Hi! Ask me anything about this day's plan, or paste a 攻略/description and I'll help you turn it into pins."
+        : "Hi! I'm running as a local assistant right now (no real AI connected) — I can answer questions about distance, timing, and which pins still need notes. Tap ⚙️ above to connect a real AI with your own API key for open-ended help.");
+    }
+  }
+});
+document.getElementById('aiClose').addEventListener('click', ()=> document.getElementById('aiPanel').classList.remove('open'));
+
+document.getElementById('aiSettingsToggle').addEventListener('click', ()=>{
+  const panel = document.getElementById('aiSettings');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('aiProvider').value = aiConfig.provider || '';
+    document.getElementById('aiKeyInput').value = aiConfig.key || '';
+  }
+});
+document.getElementById('aiKeySave').addEventListener('click', ()=>{
+  const provider = document.getElementById('aiProvider').value;
+  const key = document.getElementById('aiKeyInput').value.trim();
+  aiConfig = {provider: key ? provider : '', key};
+  localStorage.setItem(AI_KEY_STORE, JSON.stringify(aiConfig));
+  document.getElementById('aiSettings').classList.remove('open');
+  addChatMessage('bot', key ? `Connected to ${provider==='openai'?'OpenAI':'Anthropic'}. Ask away!` : 'Switched back to the local assistant (no key saved).');
+});
+
+function addChatMessage(role, text){
+  chatHistory.push({role, text});
+  const log = document.getElementById('chatLog');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (role==='user' ? 'user' : 'bot');
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+document.getElementById('chatForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if(!question) return;
+  input.value = '';
+  addChatMessage('user', question);
+  const thinking = document.createElement('div');
+  thinking.className = 'chat-msg bot';
+  thinking.textContent = '…';
+  document.getElementById('chatLog').appendChild(thinking);
+  document.getElementById('chatLog').scrollTop = 999999;
+  let reply;
+  try{
+    reply = aiConfig.key ? await askRealAI(question) : answerLocally(question);
+  }catch(err){
+    console.error('AI assistant failed:', err);
+    reply = "I couldn't reach the AI provider just now (check your API key or connection). Here's a local answer instead: " + answerLocally(question);
+  }
+  thinking.remove();
+  addChatMessage('bot', reply);
+});
+
+// Small pattern-matching fallback — not a real language model, just enough to answer the
+// most common planning questions without needing a backend or API key.
+function answerLocally(q){
+  const ql = q.toLowerCase();
+  const vis = visiblePins();
+  const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
+  if(order.length===0) return "There aren't any pins on this day yet — search, browse nearby, or click the map to add some first.";
+  if(/how (far|long)|distance|km|time|walk/.test(ql)){
+    const dist = totalDistance(order);
+    const walkMin = Math.round(dist/1000/4.5*60);
+    return `This day covers about ${(dist/1000).toFixed(1)}km, roughly ${walkMin} minutes of walking between stops (not counting time spent at each place).`;
+  }
+  if(/far|outlier|separate|detour|skip/.test(ql)){
+    const centroid = {lat: order.reduce((s,p)=>s+p.lat,0)/order.length, lng: order.reduce((s,p)=>s+p.lng,0)/order.length};
+    const far = order.map(p=>({p, d: haversine(p,centroid)/1000})).sort((a,b)=>b.d-a.d)[0];
+    return far.d>1.5 ? `"${far.p.name}" is the furthest from the rest of today's pins (~${far.d.toFixed(1)}km from the group). Might be worth a separate trip.` : "Your pins today are all reasonably close together — no obvious outlier.";
+  }
+  if(/order|route|sequence|first|next|visit/.test(ql)){
+    return "Suggested order: " + order.map((p,i)=>`${i+1}. ${p.name}`).join('  →  ');
+  }
+  if(/missing|notes|攻略|link|guide/.test(ql)){
+    const missing = order.filter(p=>!p.notes && !p.link);
+    return missing.length===0 ? "Every pin today has notes or a link attached — nice." : `Still missing 攻略 for: ${missing.map(p=>p.name).join(', ')}.`;
+  }
+  if(/hour|open|close/.test(ql)){
+    const withHours = order.filter(p=>p.hours);
+    return withHours.length===0 ? "None of today's pins have opening hours on file yet — try re-adding them via search or nearby browse, which pull hours when available." : withHours.map(p=>`${p.name}: ${p.hours}`).join('\n');
+  }
+  if(/help|what can you/.test(ql)){
+    return "I can tell you: total walking distance/time, which pin is furthest from the rest, the suggested visiting order, which pins are missing 攻略, and opening hours where I have them. For open-ended research (like reading a pasted 攻略 or answering 'which is better'), connect a real AI key via the ⚙️ settings.";
+  }
+  return "I'm just a local heuristic assistant right now, so I mainly answer questions about distance, order, missing notes, and hours. Try asking one of those, or connect a real AI key (⚙️ above) for open-ended help.";
+}
+
+// Calls the user's own OpenAI or Anthropic API directly from the browser using their saved
+// key. The key never touches any server of ours — it's stored in localStorage and sent
+// straight to the provider.
+async function askRealAI(question){
+  const vis = visiblePins();
+  const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
+  const trip = currentTrip();
+  const context = `You are a helpful, concise travel-planning assistant embedded in a trip-pinning app. `
+    + `Current trip: "${trip.name}". Day ${trip.activeDay==='all'?'(all days)':trip.activeDay}. `
+    + `Pinned stops in suggested order: ` + order.map((p,i)=>`${i+1}. ${p.name}${p.notes?` (notes: ${p.notes})`:''}${p.hours?` (hours: ${p.hours})`:''}`).join('; ')
+    + `. Answer the user's question helpfully in 2-4 sentences.`;
+
+  if(aiConfig.provider==='openai'){
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+aiConfig.key},
+      body: JSON.stringify({
+        model:'gpt-4o-mini',
+        messages:[{role:'system',content:context},{role:'user',content:question}],
+        max_tokens:400
+      })
+    });
+    if(!resp.ok) throw new Error('OpenAI HTTP '+resp.status);
+    const data = await resp.json();
+    return data.choices && data.choices[0] && data.choices[0].message.content.trim();
+  }
+  if(aiConfig.provider==='anthropic'){
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':aiConfig.key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-3-5-haiku-latest',
+        max_tokens:400,
+        system:context,
+        messages:[{role:'user',content:question}]
+      })
+    });
+    if(!resp.ok) throw new Error('Anthropic HTTP '+resp.status);
+    const data = await resp.json();
+    return data.content && data.content[0] && data.content[0].text.trim();
+  }
+  return answerLocally(question);
+}
+
+function renderAiTips(){
+  const body = document.getElementById('aiTips');
+  const order0 = visiblePins();
+  if(order0.length===0){
+    body.innerHTML = `<div class="tip">Add a few pins to this day and I'll help you spot clusters, outliers, and rough timing.</div>`;
+    return;
+  }
+  const order = routeOrder ? routeOrder.map(id=>order0.find(p=>p.id===id)).filter(Boolean) : order0;
+  let tips = [];
+  const centroid = {
+    lat: order.reduce((s,p)=>s+p.lat,0)/order.length,
+    lng: order.reduce((s,p)=>s+p.lng,0)/order.length
+  };
+  order.forEach(p=>{
+    const d = haversine(p, centroid)/1000;
+    if(d>3) tips.push(`"${escapeHtml(p.name)}" is ~${d.toFixed(1)}km from the rest of today's pins — consider moving it to another day or check if it's worth the detour.`);
+  });
+  if(order.length>=2){
+    const dist = totalDistance(order);
+    const walkMin = Math.round(dist/1000/4.5*60);
+    tips.push(`This day covers ~${(dist/1000).toFixed(1)}km, about ${walkMin} min of walking. Budget roughly ${Math.round(walkMin/60*10)/10}–${Math.round((walkMin+order.length*30)/60*10)/10} hrs total.`);
+  }
+  const missingNotes = order.filter(p=>!p.notes && !p.link).length;
+  if(missingNotes>0) tips.push(`${missingNotes} pin${missingNotes>1?'s':''} still ${missingNotes>1?'have':'has'} no 攻略 attached.`);
+  if(tips.length===0) tips.push(`Looks good — today's pins are reasonably clustered and each has notes attached.`);
+  body.innerHTML = tips.slice(0,3).map(t=>`<div class="tip">${t}</div>`).join('');
+}
+
+// ============================================================
+// Master re-render used whenever trip/day changes
+// ============================================================
+function renderAll(){
+  renderTripChips();
+  renderDayChips();
+  refreshRoute();
+  if(document.getElementById('aiPanel').classList.contains('open')) renderAiTips();
+}
+
+renderAll();
+</script>
+</body>
+</html>
