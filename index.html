@@ -1047,9 +1047,15 @@ const map = L.map('map').setView(
   savedView ? savedView.center : [20, 10],
   savedView ? savedView.zoom : 2
 ); // no region hardcoded — starts at your last view, or a world view, then geolocates below
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
+// Switched from tile.openstreetmap.org to CARTO's Voyager basemap: OSM's own tile CDN
+// policy-blocks apps like this one (no server-side control over Referer/User-Agent from a
+// static client page), which was surfacing as a visible "Access blocked" tile overlay.
+// CARTO's free basemap tiles are OSM data under the same license, served on infrastructure
+// meant for exactly this kind of client-side, no-API-key use.
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  maxZoom: 20,
+  subdomains: 'abcd',
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 }).addTo(map);
 
 if(!savedView && navigator.geolocation){
