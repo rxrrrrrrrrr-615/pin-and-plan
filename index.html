@@ -37,7 +37,11 @@
   #app{display:flex;height:100vh;}
   #sidebar{width:400px;min-width:360px;background:var(--card);border-right:3px solid var(--ink);display:flex;flex-direction:column;overflow:hidden;}
   #map{flex:1;position:relative;}
-  header{padding:16px 18px 12px;border-bottom:3px solid var(--ink);background:linear-gradient(180deg,var(--yellow-pale),var(--card) 70%);flex-shrink:0;}
+  header{padding:16px 18px 12px;border-bottom:3px solid var(--ink);background:linear-gradient(180deg,var(--yellow-pale),var(--card) 70%);flex-shrink:0;position:relative;}
+  .lang-switch{position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:5px;}
+  .lang-switch button{border:none;background:none;cursor:pointer;padding:2px 3px;color:var(--muted);font-family:inherit;font-weight:700;font-size:11.5px;min-height:auto;}
+  .lang-switch button.active{color:var(--ink);text-decoration:underline;text-decoration-color:var(--teal);text-underline-offset:2px;}
+  .lang-switch .lang-sep{color:var(--muted);font-size:10.5px;}
   header h1{font-family:var(--font-display);font-weight:700;font-size:20px;margin:0 0 2px;letter-spacing:.2px;}
   header p{margin:0;font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.5;}
 
@@ -48,6 +52,12 @@
   .tab-chip{border:2px solid var(--ink);border-radius:14px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);white-space:nowrap;font-family:inherit;flex-shrink:0;display:flex;align-items:center;gap:5px;min-height:34px;}
   .tab-chip.active{background:var(--purple);color:#fff;box-shadow:var(--sticker-shadow);}
   .tab-chip .date-label{font-size:10px;opacity:.75;font-weight:600;}
+  .tab-chip-wrap{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+  .date-edit-btn{border:1.5px solid var(--line);border-radius:10px;background:var(--card);font-size:12px;padding:0;cursor:pointer;width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+  .date-edit-btn:hover{background:#f2ece2;border-color:var(--ink);}
+  .trip-chip-wrap{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+  .trip-edit-btn{border:1.5px solid var(--line);border-radius:10px;background:var(--card);font-size:11px;padding:0;cursor:pointer;width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+  .trip-edit-btn:hover{background:#f2ece2;border-color:var(--ink);}
   .chip-add{border:2px dashed var(--ink);border-radius:14px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--ink);white-space:nowrap;font-family:inherit;flex-shrink:0;min-height:34px;}
   .chip-add:hover{background:var(--teal-pale);}
 
@@ -99,10 +109,32 @@
   .drag-handle{position:absolute;top:8px;right:26px;font-size:14px;color:var(--muted);cursor:grab;user-select:none;padding:2px 4px;}
   .pin-card.dragging{opacity:.4;}
   .pin-card.drag-over{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-pale);}
-  .reorder-row{display:flex;gap:4px;margin:4px 0 2px;}
-  .reorder-row button{border:1.5px solid var(--line);border-radius:7px;background:#fff;font-size:11px;padding:3px 8px;cursor:pointer;min-height:26px;font-family:inherit;}
-  .reorder-row button:disabled{opacity:.35;cursor:default;}
-  .cat-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;border:1.5px solid var(--ink);margin-left:6px;vertical-align:middle;}
+  .meta-dot{color:var(--muted);font-weight:700;}
+  .pin-meta select.cat-select{font-weight:700;}
+  .route-status{margin:2px 4px 10px;}
+  .status-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;border:1.5px solid var(--ink);}
+  .status-pill.suggested{background:var(--teal-pale);}
+  .status-pill.manual{background:var(--yellow-pale);}
+  .status-note{display:block;font-size:10.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.4;}
+  .secondary-actions{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+  .nav-dropdown{position:relative;}
+  .nav-toggle-btn{width:100%;border:2px solid var(--ink);border-radius:10px;padding:7px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--card);color:var(--ink);font-family:inherit;min-height:32px;}
+  .nav-toggle-btn:hover{background:#f2ece2;}
+  .nav-menu{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:var(--sticker-shadow);z-index:50;overflow:hidden;}
+  .nav-menu.hidden{display:none;}
+  .nav-menu .navbtn{display:block;width:100%;text-align:left;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);border-radius:0;font-family:inherit;}
+  .nav-menu .navbtn:last-child{border-bottom:none;}
+  .mustvisit-btn{border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-size:10.5px;font-weight:700;padding:2px 7px;cursor:pointer;font-family:inherit;min-height:24px;color:var(--muted);}
+  .mustvisit-btn.active{background:var(--yellow-pale);border-color:var(--ink);color:var(--ink);}
+  .duration-select{border:1.5px solid var(--line);border-radius:8px;font-size:10.5px;font-weight:700;padding:2px 4px;font-family:inherit;background:var(--card);min-height:24px;}
+  .budget-status{margin:8px 4px 0;padding:8px 10px;border:1.5px solid var(--ink);border-radius:12px;font-size:11.5px;font-weight:700;line-height:1.5;}
+  .budget-status.over{background:var(--orange-pale);}
+  .budget-status.fits{background:var(--teal-pale);}
+  .budget-status .budget-line{display:block;font-weight:600;color:var(--muted);font-size:10.5px;margin-top:3px;}
+  .removal-suggestion{margin:8px 4px 0;padding:8px 10px;border:1.5px dashed var(--ink);border-radius:12px;background:var(--card);font-size:11.5px;font-weight:600;line-height:1.5;}
+  .removal-suggestion strong{font-weight:800;}
+  .removal-suggestion button{display:block;margin-top:6px;border:2px solid var(--ink);border-radius:10px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;background:var(--pink-pale);color:var(--ink);font-family:inherit;}
+  .removal-suggestion button:hover{background:var(--pink);color:#fff;}
   .del{background:var(--pink-pale);color:var(--pink-dark);}
   .imgprev{max-width:100%;border-radius:10px;margin-top:8px;display:block;border:2px solid var(--ink);}
   .fileinput{font-size:10px;margin-top:8px;font-weight:600;}
@@ -186,36 +218,41 @@
   <div id="sidebar">
     <header>
       <h1>📍 Pin &amp; Plan</h1>
-      <p>search · pin · attach your 攻略 · optimize the walk ✨</p>
+      <p data-i18n="subtitle">Search · Pin · Attach Your 攻略 · Optimize the Walk ✨</p>
+      <div class="lang-switch" role="group" aria-label="Language / 语言">
+        <button type="button" data-lang="en">EN</button>
+        <span class="lang-sep">|</span>
+        <button type="button" data-lang="zh">中文</button>
+      </div>
     </header>
 
     <div class="chipbar" role="tablist" aria-label="Your trips">
-      <span class="chipbar-label">Trip</span>
+      <span class="chipbar-label" data-i18n="chipbarTripLabel">Trip</span>
       <div class="chipbar-scroll" id="tripChips"></div>
-      <button class="chip-add" id="addTripBtn" aria-label="Create a new trip">+ Trip</button>
+      <button class="chip-add" id="addTripBtn" data-i18n="addTrip" data-i18n-aria="createNewTripAria" aria-label="Create a new trip">+ Trip</button>
     </div>
 
     <div class="chipbar" role="tablist" aria-label="Days in this trip">
-      <span class="chipbar-label">Day</span>
+      <span class="chipbar-label" data-i18n="chipbarDayLabel">Day</span>
       <div class="chipbar-scroll" id="dayChips"></div>
-      <button class="chip-add" id="addDayBtn" aria-label="Add a day">+ Day</button>
+      <button class="chip-add" id="addDayBtn" data-i18n="addDay" data-i18n-aria="addDayAria" aria-label="Add a day">+ Day</button>
     </div>
 
     <div class="section searchbox">
       <div style="padding:12px 16px 0;">
-        <label for="searchInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a place</label>
+        <label for="searchInput" data-i18n="searchAriaLabel" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a place</label>
         <div class="search-row">
-          <input id="searchInput" placeholder="Search a place, in any language (starbucks / 星巴克 / an address)…" />
-          <button type="button" class="search-btn" id="searchBtn" aria-label="Search">🔍</button>
+          <input id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="Search a place, in any language (starbucks / 星巴克 / an address)…" />
+          <button type="button" class="search-btn" id="searchBtn" data-i18n-aria="search" aria-label="Search">🔍</button>
         </div>
-        <div class="search-hint">Press Enter or tap 🔍 to search</div>
+        <div class="search-hint" data-i18n="searchHint">Press Enter or tap 🔍 to search</div>
         <div class="searchresults" id="searchResults" aria-live="polite"></div>
       </div>
     </div>
 
     <div class="section">
       <button class="section-toggle" id="browseToggle" aria-expanded="false" aria-controls="browseBody">
-        <span>🗺️ Browse nearby places</span>
+        <span data-i18n="browseNearby">🗺️ Browse nearby places</span>
         <span class="chevron">▾</span>
       </button>
       <div class="section-body hidden" id="browseBody">
@@ -225,88 +262,95 @@
     </div>
 
     <div id="pinlistWrap">
-      <div class="section-label">📋 <span id="dayLabel">Stops</span></div>
+      <div class="section-label">📋 <span id="dayLabel" data-i18n="stopsHeader">Stops</span></div>
+      <div id="routeStatus" class="route-status"></div>
       <div id="pinlist"></div>
     </div>
     <div id="summary"></div>
+    <div id="budgetStatus"></div>
+    <div id="removalSuggestion"></div>
     <div id="toolbar">
-      <button id="optimizeBtn">🔄 Recalculate route</button>
-      <button id="exportBtn" class="secondary">Export trip (.json)</button>
-      <button id="clearAllBtn" class="secondary">Clear this day</button>
-      <button id="sampleTripBtn" class="secondary">Sample trip 示例行程</button>
+      <button id="optimizeBtn" data-i18n="recalcRoute">🔄 Recalculate route</button>
+      <button id="exportBtn" class="secondary" data-i18n="exportTrip">Export trip (.json)</button>
+      <button id="clearAllBtn" class="secondary" data-i18n="clearThisDay">Clear this day</button>
+      <button id="sampleTripBtn" class="secondary" data-i18n="sampleTripBtn">Sample trip</button>
     </div>
   </div>
   <div id="map">
     <div id="locBadge">🌍 <span id="locBadgeText">Choose a country/city</span> <span style="opacity:.5;">▾</span></div>
   </div>
-  <button id="aiToggle" title="Trip assistant" aria-label="Open trip assistant">💬</button>
+  <button id="aiToggle" data-i18n-title="tripAssistant" data-i18n-aria="openTripAssistantAria" title="Trip assistant" aria-label="Open trip assistant">💬</button>
   <div id="aiPanel">
     <div id="aiHead">
-      <span>Trip assistant <span id="aiModeLabel" class="mode-badge"></span></span>
+      <span class="ai-head-title"><span data-i18n="tripAssistant">Trip assistant</span> <span id="aiModeLabel" class="mode-badge"></span></span>
       <div class="head-btns">
-        <button id="aiSettingsToggle" aria-label="AI settings" title="AI settings">⚙️</button>
-        <button id="aiClose" aria-label="Close trip assistant" title="Close">✕</button>
+        <button id="aiSettingsToggle" data-i18n-aria="aiSettingsAria" data-i18n-title="aiSettingsAria" aria-label="AI settings" title="AI settings">⚙️</button>
+        <button id="aiClose" data-i18n-aria="closeTripAssistantAria" data-i18n-title="closeTitle" aria-label="Close trip assistant" title="Close">✕</button>
       </div>
     </div>
     <div id="aiSettings">
-      <label for="aiProvider">AI provider</label>
+      <label for="aiProvider" data-i18n="aiProviderFieldLabel">AI provider</label>
       <select id="aiProvider">
-        <option value="">Local Trip Helper — no key needed, not real AI</option>
-        <option value="openai">AI Mode: OpenAI (bring your own key)</option>
-        <option value="anthropic">AI Mode: Anthropic (bring your own key)</option>
+        <option value="" data-i18n="aiProviderLocalLabel">Local Trip Helper — no key needed, not real AI</option>
+        <option value="openai" data-i18n="aiProviderOpenAI">AI Mode: OpenAI (bring your own key)</option>
+        <option value="anthropic" data-i18n="aiProviderAnthropic">AI Mode: Anthropic (bring your own key)</option>
       </select>
-      <label for="aiKeyInput">API key</label>
-      <input type="password" id="aiKeyInput" placeholder="Paste your API key…" autocomplete="off" />
-      <button type="button" class="save-key" id="aiKeySave">Save</button>
-      <p>Optional. Your key is kept only in this browser tab's memory (sessionStorage) — it's cleared automatically when you close the tab, and is sent directly from your browser to the provider you chose, never through any server of ours. Leave this blank to keep using the Local Trip Helper (distance/timing heuristics only, not a real language model).</p>
+      <label for="aiKeyInput" data-i18n="apiKeyLabel">API key</label>
+      <input type="password" id="aiKeyInput" data-i18n-placeholder="apiKeyPlaceholder" placeholder="Paste your API key…" autocomplete="off" />
+      <button type="button" class="save-key" id="aiKeySave" data-i18n="save">Save</button>
+      <p data-i18n="aiSettingsExplainer">Optional. Your key is kept only in this browser tab's memory (sessionStorage) — it's cleared automatically when you close the tab, and is sent directly from your browser to the provider you chose, never through any server of ours. Leave this blank to keep using the Local Trip Helper (distance/timing heuristics only, not a real language model).</p>
     </div>
     <div id="aiTips"></div>
     <div id="chatLog" aria-live="polite"></div>
     <form id="chatForm">
-      <label for="chatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Ask the trip assistant</label>
-      <input id="chatInput" placeholder="Ask about your plan…" autocomplete="off" />
-      <button type="submit" aria-label="Send">➤</button>
+      <label for="chatInput" data-i18n="askTripAssistantAria" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Ask the trip assistant</label>
+      <input id="chatInput" data-i18n-placeholder="askAboutPlan" placeholder="Ask about your plan…" autocomplete="off" />
+      <button type="submit" data-i18n-aria="send" aria-label="Send">➤</button>
     </form>
   </div>
 </div>
 
 <div class="modal-overlay hidden" id="locModal">
   <div class="modal-card">
-    <h2>Where are you planning for?</h2>
-    <p>Search any country or city, in any language. You can change this anytime from the badge on the map.</p>
-    <label for="locModalInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a city</label>
+    <h2 data-i18n="whereQuestion">Where are you planning for?</h2>
+    <p data-i18n="whereBody">Search any country or city, in any language. You can change this anytime from the badge on the map.</p>
+    <label for="locModalInput" data-i18n="searchCityAria" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Search a city</label>
     <div class="search-row">
-      <input id="locModalInput" placeholder="e.g. Toronto, 成都, Paris…" />
-      <button type="button" class="search-btn" id="locModalSearchBtn" aria-label="Search">🔍</button>
+      <input id="locModalInput" data-i18n-placeholder="locSearchPlaceholder" placeholder="e.g. Toronto, 成都, Paris…" />
+      <button type="button" class="search-btn" id="locModalSearchBtn" data-i18n-aria="search" aria-label="Search">🔍</button>
     </div>
-    <div class="search-hint" style="margin-bottom:6px;">Press Enter or tap 🔍 to search</div>
+    <div class="search-hint" data-i18n="searchHint" style="margin-bottom:6px;">Press Enter or tap 🔍 to search</div>
     <div class="modal-results" id="locModalResults" aria-live="polite"></div>
     <div class="chips" id="locModalQuick"></div>
-    <button type="button" class="skip-link" id="locModalSkip">Skip — I'll just browse the world map</button>
+    <button type="button" class="skip-link" id="locModalSkip" data-i18n="skipBrowseWorld">Skip — I'll just browse the world map</button>
   </div>
 </div>
 
 <div class="modal-overlay hidden" id="dayModal">
   <div class="modal-card">
     <h2 id="dayModalTitle">Add a day</h2>
-    <p>Give this day an optional date so your plan is easier to follow.</p>
-    <label for="dayModalDate" style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Date (optional)</label>
+    <p data-i18n="dayModalBody">Give this day an optional date so your plan is easier to follow.</p>
+    <label for="dayModalDate" data-i18n="dayModalDateLabel" style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Date (optional)</label>
     <input type="date" id="dayModalDate" />
-    <button type="button" class="primary-btn" id="dayModalSave">Save</button>
-    <button type="button" class="skip-link" id="dayModalCancel">Cancel</button>
+    <label for="dayModalBudget" data-i18n="dayModalBudgetLabel" style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Time budget in hours (optional)</label>
+    <input type="number" id="dayModalBudget" min="0" step="0.5" data-i18n-placeholder="dayModalBudgetPlaceholder" placeholder="e.g. 6" />
+    <button type="button" class="primary-btn" id="dayModalSave" data-i18n="save">Save</button>
+    <button type="button" class="skip-link" id="dayModalCancel" data-i18n="cancel">Cancel</button>
   </div>
 </div>
 
 <!-- Generic reusable modal (STEP 1.4): replaces prompt()/confirm()/alert-as-decision with an
      in-page dialog, reusing the existing .modal-overlay/.modal-card look. Configured at call
-     time via openGenericModal(); see that function for the options it accepts. -->
+     time via openGenericModal(); see that function for the options it accepts. Title/body/
+     button text is set per-call (already localized via t() at each call site), so only the
+     static pre-call default ("OK") needs a data-i18n attribute here. -->
 <div class="modal-overlay hidden" id="genericModal">
   <div class="modal-card">
     <h2 id="genericModalTitle"></h2>
     <p id="genericModalBody" style="white-space:pre-line;"></p>
     <input id="genericModalInput" style="display:none;" />
-    <button type="button" class="primary-btn" id="genericModalConfirm">OK</button>
-    <button type="button" class="skip-link" id="genericModalCancel">Cancel</button>
+    <button type="button" class="primary-btn" id="genericModalConfirm" data-i18n="ok">OK</button>
+    <button type="button" class="skip-link" id="genericModalCancel" data-i18n="cancel">Cancel</button>
   </div>
 </div>
 
@@ -321,6 +365,487 @@ function uid(){ return 'p' + Date.now() + Math.floor(Math.random()*1000); }
 function escapeHtml(s){
   return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+// ============================================================
+// STEP 2.11: English / 简体中文 UI localization.
+// This is UI-chrome translation ONLY -- it never touches external data: place names/addresses
+// returned by Nominatim/Overpass/map providers, user-typed pin names/notes/links, or exported
+// JSON field names all stay exactly as-is regardless of language. i18n holds every translated
+// UI string in one place (centralized dictionary, no duplicated HTML per language); t(key, vars)
+// looks a key up in the current language, falls back to English then to the raw key if missing,
+// and does simple {varName} substitution for the handful of strings that need one.
+// ============================================================
+const LANG_KEY = 'pinplan_lang_v1';
+const i18n = {
+  en: {
+    // Header
+    subtitle: 'Search · Pin · Attach Your 攻略 · Optimize the Walk ✨',
+    // Trip / day chip bars
+    chipbarTripLabel: 'Trip',
+    addTrip: '+ Trip',
+    createNewTripAria: 'Create a new trip',
+    chipbarDayLabel: 'Day',
+    addDay: '+ Day',
+    addDayAria: 'Add a day',
+    allDays: 'All days',
+    dayTabLabel: 'Day {n}',
+    editDateForDayAria: 'Edit date for Day {n}',
+    addDateForDayAria: 'Add date for Day {n}',
+    editDate: 'Edit date',
+    addDate: 'Add date',
+    renameTripTitle: 'Rename trip',
+    renameTripPlaceholder: 'Trip name',
+    renameTripAria: 'Rename {name}',
+    renameTripBtnTitle: 'Rename trip',
+    newTripTitle: 'New trip',
+    newTripPlaceholder: 'e.g. "Chengdu girls trip"',
+    newTripDefaultName: 'New trip',
+    create: 'Create',
+    save: 'Save',
+    cancel: 'Cancel',
+    // Day modal
+    dayModalAddTitle: 'Add a day',
+    dayModalEditDateTitle: 'Edit date — Day {n}',
+    dayModalAddDateTitle: 'Add date — Day {n}',
+    dayModalBody: 'Give this day an optional date so your plan is easier to follow.',
+    dayModalDateLabel: 'Date (optional)',
+    dayModalBudgetLabel: 'Time budget in hours (optional)',
+    dayModalBudgetPlaceholder: 'e.g. 6',
+    // Search
+    searchAriaLabel: 'Search a place',
+    searchPlaceholder: 'Search a place, in any language (starbucks / 星巴克 / an address)…',
+    search: 'Search',
+    searchHint: 'Press Enter or tap 🔍 to search',
+    searchMinChars: 'Type at least 2 characters, then press Enter or tap 🔍.',
+    searching: 'Searching…',
+    searchNoResults: 'No results in this area — try zooming the map out, rewording your search, or picking a different city from the badge above',
+    searchFailed: 'Search failed — check your internet connection, or try again in a moment',
+    // Browse nearby
+    browseNearby: '🗺️ Browse nearby places',
+    zoomInFirst: 'Zoom into a neighborhood on the map first, then tap {label} again to see nearby spots.',
+    findingNearby: 'Finding {label} nearby…',
+    noNamedSpots: 'No named spots found in this view — try zooming out slightly or panning.',
+    pinBtn: 'Pin',
+    pinnedCheck: 'Pinned ✓',
+    categoryBrowseFailed: "Couldn't load nearby places — check your connection and try again.",
+    // Categories (display labels only — the stored pin.category value is unaffected, see catLabel())
+    catRestaurants: 'Restaurants',
+    catCafes: 'Cafes',
+    catShopping: 'Shopping',
+    catAttractions: 'Attractions',
+    catBars: 'Bars',
+    catOther: 'Other',
+    // Pin card
+    dragHandleTitle: 'Drag to reorder — overrides the suggested order',
+    removePinAria: 'Remove {name}',
+    removePinTitle: 'Remove this pin',
+    placeNameAria: 'Place name',
+    mustVisit: 'Must Visit',
+    mustVisitTitleOn: 'Must Visit — an explicit constraint the route will never suggest removing. Click to unmark.',
+    mustVisitTitleOff: 'Mark as Must Visit — a place you definitely want to go',
+    stayLabel: 'stay',
+    stayTitle: 'Estimated time spent at this stop — an estimate, not a guarantee',
+    stayAria: 'Estimated visit duration, an estimate you can edit',
+    durationOption30: '30 min',
+    durationOption45: '45 min',
+    durationOption60: '1 hr',
+    durationOption90: '1.5 hr',
+    durationOption120: '2 hr',
+    durationCustomMin: '{min} min',
+    categoryInlineLabel: 'category',
+    categoryAria: 'Category',
+    dayInlineLabel: 'day',
+    moveToDayAria: 'Move to day',
+    hoursNotListed: 'Hours not listed',
+    notesPlaceholder: 'Paste your 攻略 notes here (tips, must-try items, best time to go)…',
+    notesAria: 'Notes for this place',
+    linkPlaceholder: 'Paste a 小红书/blog link…',
+    linkAria: 'Link for this place',
+    linkHint: 'Link is saved only, AI does not open it',
+    attachScreenshot: '📷 Attach a screenshot',
+    screenshotAlt: 'Attached screenshot for {name}',
+    aiParseBtn: '✨ Parse with AI',
+    navigateBtn: '📍 Navigate ▾',
+    navGoogle: 'Google Maps',
+    navAmap: '高德 Amap',
+    navBaidu: 'Baidu Maps',
+    navApple: 'Apple Maps',
+    // Route status
+    suggestedRoute: '✨ Suggested route',
+    manualOrder: '🖐️ Manual order',
+    manualOrderNote: 'You adjusted the route manually. Recalculate to generate a new suggested route.',
+    // Summary pills
+    stopsCount: '📍 {n} stop',
+    stopsCountPlural: '📍 {n} stops',
+    distancePill: '🚶 {km} km ({qualifier})',
+    distRoute: 'route',
+    distApprox: 'approx',
+    distTitleReal: 'Real walking-route distance from OSRM',
+    distTitleApprox: 'Straight-line estimate — not an actual walking route',
+    walkingMin: '⏱️ ~{min} min walking',
+    notesCoverage: '📝 {a}/{b} have 攻略',
+    totalDurationPill: '⏳ ~{total} total',
+    totalDurationTitleReal: "Walking time + each stop's estimated visit duration",
+    totalDurationTitleApprox: "Walking time + each stop's estimated visit duration — based on an approximate route",
+    // Budget status
+    budgetLineOver: 'Budget: {budget} · Plan: {plan} · {diff} over',
+    budgetLineFits: 'Budget: {budget} · Plan: {plan} · {remaining} remaining',
+    budgetOverMsg: 'Your current plan is about {diff} over your {budget} budget.',
+    budgetFitsMsg: 'Your plan fits within your {budget} budget.',
+    // Removal suggestion
+    removalSuggestionText: 'Consider skipping <strong>{name}</strong>. It could save approximately {saved}, including visit time and route detour.',
+    removeFromDay: 'Remove from this day',
+    removeStopTitle: 'Remove this stop?',
+    removeStopBody: 'Remove "{name}" from this day? This cannot be undone.',
+    remove: 'Remove',
+    // formatDuration()
+    durationHrMin: '{h} hr {m} min',
+    durationHrOnly: '{h} hr',
+    durationMinOnly: '{m} min',
+    // Toolbar
+    recalcRoute: '🔄 Recalculate route',
+    exportTrip: 'Export trip (.json)',
+    clearThisDay: 'Clear this day',
+    sampleTripBtn: 'Sample trip',
+    addAtLeast2Pins: 'Add at least 2 pins first',
+    clearDayBodyScoped: 'Remove all pins from Day {n}? This cannot be undone.',
+    clearDayBodyAll: 'Remove ALL pins from this entire trip? This cannot be undone.',
+    clear: 'Clear',
+    // Empty / section labels
+    emptyDay: 'No pins for this day yet. Search a place above, browse nearby, or click anywhere on the map to drop one. 🗺️',
+    stopsHeader: 'Stops',
+    stopsAllDaysSub: '· all days · {n} total',
+    stopsDaySub: '· Day {n}',
+    // Location modal
+    whereQuestion: 'Where are you planning for?',
+    whereBody: 'Search any country or city, in any language. You can change this anytime from the badge on the map.',
+    searchCityAria: 'Search a city',
+    locSearchPlaceholder: 'e.g. Toronto, 成都, Paris…',
+    skipBrowseWorld: "Skip — I'll just browse the world map",
+    noResultsTrySpelling: 'No results — try a different spelling',
+    locSearchFailed: 'Search failed, try again',
+    chooseCountryCity: 'Choose a country/city',
+    // Sample trip
+    loadSampleTripTitle: 'Load sample trip?',
+    loadSampleTripBody: 'Creates a new trip, "Sample trip", with 6 real Toronto Old Town landmarks — including a 4-hour time budget, estimated visit durations, and two Must Visit stops — so you can try v0.2\'s planning features without needing search to work. Your existing trips are never changed.',
+    load: 'Load',
+    sampleTripName: 'Sample trip',
+    sampleTripLoaded: 'Sample trip loaded',
+    // Storage / generic errors
+    storageFull: 'Storage full, latest change not saved',
+    storageSaveFailed: "Couldn't save your change ({err})",
+    // AI panel / trip assistant
+    tripAssistant: 'Trip assistant',
+    openTripAssistantAria: 'Open trip assistant',
+    closeTripAssistantAria: 'Close trip assistant',
+    closeTitle: 'Close',
+    aiSettingsAria: 'AI settings',
+    aiProviderFieldLabel: 'AI provider',
+    aiProviderLocalLabel: 'Local Trip Helper — no key needed, not real AI',
+    aiProviderOpenAI: 'AI Mode: OpenAI (bring your own key)',
+    aiProviderAnthropic: 'AI Mode: Anthropic (bring your own key)',
+    apiKeyLabel: 'API key',
+    apiKeyPlaceholder: 'Paste your API key…',
+    aiSettingsExplainer: "Optional. Your key is kept only in this browser tab's memory (sessionStorage) — it's cleared automatically when you close the tab, and is sent directly from your browser to the provider you chose, never through any server of ours. Leave this blank to keep using the Local Trip Helper (distance/timing heuristics only, not a real language model).",
+    askAboutPlan: 'Ask about your plan…',
+    askTripAssistantAria: 'Ask the trip assistant',
+    send: 'Send',
+    aiModeLabel: 'AI Mode',
+    localModeLabel: 'Local Mode',
+    aiModeGreeting: "Hi! AI Mode is on — ask me anything about this day's plan, or paste a 攻略/description and I'll help you turn it into pins.",
+    localModeGreeting: "Hi! I'm the Local Trip Helper right now (no real AI connected, just distance/timing heuristics over your pins) — I can answer questions about distance, timing, and which pins still need notes. Tap ⚙️ above to connect a real AI with your own API key for open-ended help (AI Mode).",
+    connectedToProvider: 'Connected to {provider} — AI Mode is on. Ask away!',
+    switchedToLocal: 'Switched back to the Local Trip Helper (no key saved).',
+    aiCouldNotReachPrefix: "Couldn't reach {provider} ({err}) — check your API key or connection. Here's a local answer instead: ",
+    aiTipsEmpty: "Add a few pins to this day and I'll help you spot clusters, outliers, and rough timing.",
+    aiTipOutlier: '"{name}" is ~{km}km from the rest of today\'s pins — consider moving it to another day or check if it\'s worth the detour.',
+    aiTipDistanceSummary: 'This day covers ~{km}km{approxNote}, about {min} min of walking. Budget roughly {low}–{high} hrs total.',
+    aiTipApproxNote: ' (straight-line estimate)',
+    aiTipMissingNotesOne: '{n} pin still has no 攻略 attached.',
+    aiTipMissingNotesMany: '{n} pins still have no 攻略 attached.',
+    aiTipAllGood: "Looks good — today's pins are reasonably clustered and each has notes attached.",
+    // Local heuristic chat
+    chatEmptyDay: "There aren't any pins on this day yet — search, browse nearby, or click the map to add some first.",
+    chatDistanceReal: 'This day covers about {km}km, roughly {min} minutes of walking between stops (not counting time spent at each place) — based on {kind}.',
+    chatKindReal: 'a real walking route',
+    chatKindApprox: 'a straight-line estimate (routing service was unavailable)',
+    chatDistanceApprox: 'This day covers about {km}km (straight-line estimate), roughly {min} minutes of walking between stops (not counting time spent at each place).',
+    chatOutlier: '"{name}" is the furthest from the rest of today\'s pins (~{km}km from the group). Might be worth a separate trip.',
+    chatNoOutlier: 'Your pins today are all reasonably close together — no obvious outlier.',
+    chatSuggestedOrder: 'Suggested order: ',
+    chatAllNotesGood: 'Every pin today has notes or a link attached — nice.',
+    chatMissingNotesFor: 'Still missing 攻略 for: {names}.',
+    chatNoHoursYet: "None of today's pins have opening hours on file yet — try re-adding them via search or nearby browse, which pull hours when available.",
+    chatHelp: "I can tell you: total walking distance/time, which pin is furthest from the rest, the suggested visiting order, which pins are missing 攻略, and opening hours where I have them. For open-ended research (like reading a pasted 攻略 or answering 'which is better'), connect a real AI key via the ⚙️ settings.",
+    chatFallback: "I'm just a local heuristic assistant right now, so I mainly answer questions about distance, order, missing notes, and hours. Try asking one of those, or connect a real AI key (⚙️ above) for open-ended help.",
+    // AI parse
+    attachFirst: 'Attach a link, notes, or a screenshot first',
+    connectAiFirst: 'Connect an AI key first (tap 💬 then ⚙️) to turn on AI Mode',
+    thinking: 'Thinking…',
+    noClearSuggestion: "Couldn't pull a clear suggestion — try adding more text or a clearer screenshot",
+    applyAiSuggestionTitle: 'Apply AI suggestion?',
+    suggestedNameLine: 'Suggested name: {name}',
+    keepCurrent: '(keep current)',
+    suggestedNotesLine: 'Suggested notes: {notes}',
+    none: '(none)',
+    apply: 'Apply',
+    aiParseFailed: "Couldn't reach {provider} ({err})",
+    ok: 'OK',
+  },
+  zh: {
+    subtitle: '搜索 · 标记 · 附上攻略 · 优化路线 ✨',
+    chipbarTripLabel: '行程',
+    addTrip: '+ 行程',
+    createNewTripAria: '新建一个行程',
+    chipbarDayLabel: '天数',
+    addDay: '+ 天',
+    addDayAria: '新增一天',
+    allDays: '全部天数',
+    dayTabLabel: '第 {n} 天',
+    editDateForDayAria: '编辑第 {n} 天的日期',
+    addDateForDayAria: '为第 {n} 天添加日期',
+    editDate: '编辑日期',
+    addDate: '添加日期',
+    renameTripTitle: '重命名行程',
+    renameTripPlaceholder: '行程名称',
+    renameTripAria: '重命名{name}',
+    renameTripBtnTitle: '重命名行程',
+    newTripTitle: '新建行程',
+    newTripPlaceholder: '例如"成都闺蜜行"',
+    newTripDefaultName: '新行程',
+    create: '创建',
+    save: '保存',
+    cancel: '取消',
+    dayModalAddTitle: '新增一天',
+    dayModalEditDateTitle: '编辑日期 — 第 {n} 天',
+    dayModalAddDateTitle: '添加日期 — 第 {n} 天',
+    dayModalBody: '为这一天添加一个可选日期，让行程一目了然。',
+    dayModalDateLabel: '日期（可选）',
+    dayModalBudgetLabel: '当日时间预算（小时，可选）',
+    dayModalBudgetPlaceholder: '例如 6',
+    searchAriaLabel: '搜索地点',
+    searchPlaceholder: '搜索地点，支持任意语言（starbucks / 星巴克 / 地址）…',
+    search: '搜索',
+    searchHint: '按回车或点击 🔍 开始搜索',
+    searchMinChars: '请输入至少 2 个字符，然后按回车或点击 🔍。',
+    searching: '搜索中…',
+    searchNoResults: '此区域未找到结果——可尝试缩小地图、更换关键词，或在上方切换城市',
+    searchFailed: '搜索失败——请检查网络连接，或稍后重试',
+    browseNearby: '🗺️ 浏览附近地点',
+    zoomInFirst: '请先在地图上放大到街区级别，再次点击{label}即可查看附近地点。',
+    findingNearby: '正在查找附近的{label}…',
+    noNamedSpots: '此视图内未找到有名称的地点——请尝试缩小或平移地图。',
+    pinBtn: '标记',
+    pinnedCheck: '已标记 ✓',
+    categoryBrowseFailed: '无法加载附近地点——请检查网络连接后重试。',
+    catRestaurants: '餐厅',
+    catCafes: '咖啡厅',
+    catShopping: '购物',
+    catAttractions: '景点',
+    catBars: '酒吧',
+    catOther: '其他',
+    dragHandleTitle: '拖动以调整顺序——将切换为手动排序',
+    removePinAria: '移除{name}',
+    removePinTitle: '移除此地点',
+    placeNameAria: '地点名称',
+    mustVisit: '必去',
+    mustVisitTitleOn: '必去——这是您设定的硬性约束，规划路线时不会建议移除。点击可取消。',
+    mustVisitTitleOff: '标记为必去——表示您一定要去的地方',
+    stayLabel: '停留',
+    stayTitle: '预计在此地点停留的时间——仅为估算，并非保证',
+    stayAria: '预计停留时长，可自行编辑',
+    durationOption30: '30 分钟',
+    durationOption45: '45 分钟',
+    durationOption60: '1 小时',
+    durationOption90: '1.5 小时',
+    durationOption120: '2 小时',
+    durationCustomMin: '{min} 分钟',
+    categoryInlineLabel: '分类',
+    categoryAria: '分类',
+    dayInlineLabel: '天',
+    moveToDayAria: '移动到第几天',
+    hoursNotListed: '暂无营业时间',
+    notesPlaceholder: '在此粘贴您的攻略笔记（推荐事项、必吃必玩、最佳时间）…',
+    notesAria: '此地点的笔记',
+    linkPlaceholder: '粘贴小红书/博客链接…',
+    linkAria: '此地点的链接',
+    linkHint: '链接仅作记录保存，AI 不会打开该链接',
+    attachScreenshot: '📷 上传攻略截图',
+    screenshotAlt: '{name}的附加截图',
+    aiParseBtn: '✨ AI 智能解析',
+    navigateBtn: '📍 导航 ▾',
+    navGoogle: '谷歌地图',
+    navAmap: '高德地图',
+    navBaidu: '百度地图',
+    navApple: '苹果地图',
+    suggestedRoute: '✨ 推荐路线',
+    manualOrder: '🖐️ 手动排序',
+    manualOrderNote: '您已手动调整路线顺序。点击"重新规划路线"即可生成新的推荐路线。',
+    stopsCount: '📍 {n} 个地点',
+    stopsCountPlural: '📍 {n} 个地点',
+    distancePill: '🚶 {km} 公里（{qualifier}）',
+    distRoute: '路线',
+    distApprox: '约',
+    distTitleReal: '来自 OSRM 的真实步行路线距离',
+    distTitleApprox: '直线距离估算——并非真实步行路线',
+    walkingMin: '⏱️ 步行约 {min} 分钟',
+    notesCoverage: '📝 {a}/{b} 个地点已加攻略',
+    totalDurationPill: '⏳ 共计约 {total}',
+    totalDurationTitleReal: '步行时间 + 每个地点的预计停留时间',
+    totalDurationTitleApprox: '步行时间 + 每个地点的预计停留时间——基于估算路线',
+    budgetLineOver: '预算：{budget} · 计划：{plan} · 超出 {diff}',
+    budgetLineFits: '预算：{budget} · 计划：{plan} · 剩余 {remaining}',
+    budgetOverMsg: '您当前的计划比 {budget} 的预算多出约 {diff}。',
+    budgetFitsMsg: '您的计划在 {budget} 的预算范围内。',
+    removalSuggestionText: '可以考虑跳过<strong>{name}</strong>，这样大约能节省 {saved}（含停留时间与绕路时间）。',
+    removeFromDay: '从当天行程中移除',
+    removeStopTitle: '移除该地点？',
+    removeStopBody: '确定要将"{name}"从当天行程中移除吗？此操作无法撤销。',
+    remove: '移除',
+    durationHrMin: '{h} 小时 {m} 分钟',
+    durationHrOnly: '{h} 小时',
+    durationMinOnly: '{m} 分钟',
+    recalcRoute: '🔄 重新规划路线',
+    exportTrip: '导出行程 (.json)',
+    clearThisDay: '清空当天',
+    sampleTripBtn: '示例行程',
+    addAtLeast2Pins: '请先添加至少 2 个地点',
+    clearDayBodyScoped: '确定要移除第 {n} 天的所有地点吗？此操作无法撤销。',
+    clearDayBodyAll: '确定要移除整个行程的所有地点吗？此操作无法撤销。',
+    clear: '清空',
+    emptyDay: '这一天还没有任何地点。可在上方搜索、浏览附近，或直接点击地图任意位置添加。🗺️',
+    stopsHeader: '地点',
+    stopsAllDaysSub: '· 全部天数 · 共 {n} 个',
+    stopsDaySub: '· 第 {n} 天',
+    whereQuestion: '您计划去哪里？',
+    whereBody: '搜索任意国家或城市，支持任意语言。您可以随时通过地图上的标签重新选择。',
+    searchCityAria: '搜索城市',
+    locSearchPlaceholder: '例如：多伦多、成都、Paris…',
+    skipBrowseWorld: '跳过——先随便看看地图',
+    noResultsTrySpelling: '未找到结果——请尝试其他拼写',
+    locSearchFailed: '搜索失败，请重试',
+    chooseCountryCity: '选择国家/城市',
+    loadSampleTripTitle: '加载示例行程？',
+    loadSampleTripBody: '将创建一个名为"示例行程"的新行程，包含 6 个真实的多伦多老城地标——附带 4 小时时间预算、预计停留时长，以及两个必去地点——让您无需依赖搜索功能即可体验 v0.2 的规划功能。不会影响您现有的任何行程。',
+    load: '加载',
+    sampleTripName: '示例行程',
+    sampleTripLoaded: '示例行程已加载',
+    storageFull: '存储空间已满，最新修改未保存',
+    storageSaveFailed: '保存失败（{err}）',
+    tripAssistant: '行程助手',
+    openTripAssistantAria: '打开行程助手',
+    closeTripAssistantAria: '关闭行程助手',
+    closeTitle: '关闭',
+    aiSettingsAria: 'AI 设置',
+    aiProviderFieldLabel: 'AI 服务商',
+    aiProviderLocalLabel: '本地行程助手——无需密钥，非真实 AI',
+    aiProviderOpenAI: 'AI 模式：OpenAI（需自备密钥）',
+    aiProviderAnthropic: 'AI 模式：Anthropic（需自备密钥）',
+    apiKeyLabel: 'API 密钥',
+    apiKeyPlaceholder: '粘贴您的 API 密钥…',
+    aiSettingsExplainer: '可选。您的密钥仅保存在当前浏览器标签页内存（sessionStorage）中——关闭标签页后会自动清除，并会直接从您的浏览器发送给所选服务商，绝不经过我们的任何服务器。留空即可继续使用本地行程助手（仅基于距离/时间的简单规则，并非真实语言模型）。',
+    askAboutPlan: '询问关于您行程的问题…',
+    askTripAssistantAria: '向行程助手提问',
+    send: '发送',
+    aiModeLabel: 'AI 模式',
+    localModeLabel: '本地模式',
+    aiModeGreeting: '你好！AI 模式已开启——可以问我关于当天行程的任何问题，或粘贴一段攻略/描述，我帮你转换成地点标记。',
+    localModeGreeting: '你好！我现在是本地行程助手（未连接真实 AI，仅基于地点距离/时间做简单计算）——可以回答关于距离、时间，以及哪些地点还缺笔记的问题。点击上方 ⚙️ 连接您自己的 API 密钥即可开启 AI 模式，获得更开放式的帮助。',
+    connectedToProvider: '已连接到 {provider}——AI 模式已开启，尽管问吧！',
+    switchedToLocal: '已切换回本地行程助手（未保存密钥）。',
+    aiCouldNotReachPrefix: '无法连接到 {provider}（{err}）——请检查您的 API 密钥或网络连接。以下是本地生成的回答：',
+    aiTipsEmpty: '为当天添加几个地点后，我可以帮您分析聚集情况、离群点和大致时间安排。',
+    aiTipOutlier: '"{name}"距离当天其他地点约 {km} 公里——可以考虑挪到别的一天，或确认是否值得绕路前往。',
+    aiTipDistanceSummary: '当天行程约 {km} 公里{approxNote}，步行约 {min} 分钟。总时间建议预留约 {low}–{high} 小时。',
+    aiTipApproxNote: '（直线距离估算）',
+    aiTipMissingNotesOne: '还有 {n} 个地点尚未添加攻略。',
+    aiTipMissingNotesMany: '还有 {n} 个地点尚未添加攻略。',
+    aiTipAllGood: '看起来不错——今天的地点分布较为集中，且都已添加笔记。',
+    chatEmptyDay: '这一天还没有任何地点——请先搜索、浏览附近，或点击地图添加。',
+    chatDistanceReal: '当天行程约 {km} 公里，各地点之间步行约 {min} 分钟（不含在每个地点停留的时间）——基于{kind}。',
+    chatKindReal: '真实步行路线',
+    chatKindApprox: '直线距离估算（路线规划服务暂时不可用）',
+    chatDistanceApprox: '当天行程约 {km} 公里（直线距离估算），各地点之间步行约 {min} 分钟（不含在每个地点停留的时间）。',
+    chatOutlier: '"{name}"是当天离其他地点最远的（距离群组约 {km} 公里），或许值得单独安排一趟。',
+    chatNoOutlier: '今天的地点彼此距离都比较近——没有明显的离群点。',
+    chatSuggestedOrder: '推荐顺序：',
+    chatAllNotesGood: '今天的每个地点都已添加笔记或链接——非常好。',
+    chatMissingNotesFor: '以下地点还缺攻略：{names}。',
+    chatNoHoursYet: '今天的地点目前都没有营业时间信息——可尝试通过搜索或浏览附近重新添加，会自动获取营业时间（如果有）。',
+    chatHelp: '我可以告诉您：总步行距离/时间、哪个地点离其他地方最远、推荐游览顺序、哪些地点还缺攻略，以及已知的营业时间。如需更开放式的帮助（比如阅读一段攻略或比较"哪个更好"），请通过 ⚙️ 设置连接真实 AI 密钥。',
+    chatFallback: '我目前只是一个本地规则助手，主要能回答关于距离、顺序、缺失笔记和营业时间的问题。可以试着问这些，或点击上方 ⚙️ 连接真实 AI 密钥获得更开放式的帮助。',
+    attachFirst: '请先添加链接、笔记或截图',
+    connectAiFirst: '请先连接 AI 密钥（点击 💬 再点击 ⚙️）以开启 AI 模式',
+    thinking: '思考中…',
+    noClearSuggestion: '未能获得清晰的建议——请尝试添加更多文字或更清晰的截图',
+    applyAiSuggestionTitle: '应用 AI 建议？',
+    suggestedNameLine: '建议名称：{name}',
+    keepCurrent: '（保留当前）',
+    suggestedNotesLine: '建议笔记：{notes}',
+    none: '（无）',
+    apply: '应用',
+    aiParseFailed: '无法连接到 {provider}（{err}）',
+    ok: '好',
+  },
+};
+
+let currentLang = (localStorage.getItem(LANG_KEY) === 'zh') ? 'zh' : 'en'; // English is the default for a new user
+function getLang(){ return currentLang; }
+
+// Centralized lookup: current language -> English -> the raw key itself (so a missing
+// translation degrades to visible English text rather than "undefined" or a blank UI).
+// vars does simple {name}-style substitution for the strings that need one.
+function t(key, vars){
+  const dict = i18n[currentLang] || i18n.en;
+  let str = (dict[key] !== undefined) ? dict[key] : (i18n.en[key] !== undefined ? i18n.en[key] : key);
+  if(vars){
+    Object.keys(vars).forEach(k=>{ str = str.split('{'+k+'}').join(vars[k]); });
+  }
+  return str;
+}
+
+// Maps the stored (English, storage-stable) category name to its translated display label —
+// pin.category itself is never translated or altered, only how it's shown.
+const CATEGORY_I18N_KEY = {Restaurants:'catRestaurants', Cafes:'catCafes', Shopping:'catShopping', Attractions:'catAttractions', Bars:'catBars', Other:'catOther'};
+function catLabel(name){
+  const key = CATEGORY_I18N_KEY[name];
+  return key ? t(key) : name;
+}
+
+// Applies the current language to every static (non-JS-rendered) piece of chrome, via
+// data-i18n / data-i18n-placeholder / data-i18n-title / data-i18n-aria attributes placed on
+// the HTML in index.html. JS-rendered content (pin cards, chips, summary, chat, etc.) is
+// translated directly inside its own render function via t(), so it's covered by renderAll()
+// and friends, not by this sweep.
+function applyStaticI18n(){
+  document.documentElement.lang = currentLang==='zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{ el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{ el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+  document.querySelectorAll('.lang-switch button').forEach(b=> b.classList.toggle('active', b.dataset.lang===currentLang));
+  // locBadgeText holds either the placeholder or a real (untranslated) place name once one is
+  // chosen — only the placeholder should ever change language.
+  const loc = JSON.parse(localStorage.getItem('pinplan_location_v1') || 'null');
+  if(!loc) document.getElementById('locBadgeText').textContent = t('chooseCountryCity');
+}
+
+// Switches language immediately (no reload), persists the choice, and re-renders every
+// JS-generated piece of UI so it reflects the new language right away too.
+function setLang(lang){
+  currentLang = (lang==='zh') ? 'zh' : 'en';
+  localStorage.setItem(LANG_KEY, currentLang);
+  applyStaticI18n();
+  if(typeof renderCategoryChips === 'function') renderCategoryChips();
+  if(typeof renderAll === 'function') renderAll();
+  if(typeof updateAiModeLabel === 'function') updateAiModeLabel();
+  if(document.getElementById('aiPanel') && document.getElementById('aiPanel').classList.contains('open') && typeof renderAiTips === 'function') renderAiTips();
+}
+document.querySelectorAll('.lang-switch button').forEach(btn=>{
+  btn.addEventListener('click', ()=> setLang(btn.dataset.lang));
+});
+applyStaticI18n(); // apply the saved/default language to static chrome immediately at load
+
 
 // Non-blocking toast, replacing alert() for passive notices (STEP 1.4). Auto-dismisses;
 // doesn't block interaction the way a native alert() does, which matters in embedded/in-app
@@ -434,7 +959,7 @@ const STORE_KEY = 'pinplan_store_v2';
 const LEGACY_KEY = 'pinplan_trip_v1';
 
 function newTrip(name){
-  return { id: uid(), name: name || 'My trip', days: [{id:1, date:''}], activeDay: 1, pins: [], manualOrder: false };
+  return { id: uid(), name: name || 'My trip', days: [{id:1, date:'', timeBudgetHours:null}], activeDay: 1, pins: [], manualOrder: false };
 }
 
 function loadStore(){
@@ -460,6 +985,24 @@ let store = loadStore();
   if(changed) saveStore();
 })();
 
+// v0.2 migration: backfill the new planning-constraint fields onto any pin/day saved before
+// v0.2 existed, so old trips keep working without the user doing anything. Safe defaults per
+// the v0.2 spec: pin.mustVisit ?? false, pin.durationMinutes ?? 60, day.timeBudgetHours ?? null.
+// No existing data is removed or altered beyond adding these previously-absent fields.
+(function migrateV02Fields(){
+  let changed = false;
+  store.trips.forEach(t=>{
+    t.pins.forEach(p=>{
+      if(p.mustVisit === undefined){ p.mustVisit = false; changed = true; }
+      if(p.durationMinutes === undefined || p.durationMinutes === null){ p.durationMinutes = 60; changed = true; }
+    });
+    t.days.forEach(d=>{
+      if(d.timeBudgetHours === undefined){ d.timeBudgetHours = null; changed = true; }
+    });
+  });
+  if(changed) saveStore();
+})();
+
 function saveStore(){
   try{
     localStorage.setItem(STORE_KEY, JSON.stringify(store));
@@ -468,8 +1011,8 @@ function saveStore(){
     const isQuota = err && (err.name==='QuotaExceededError' || err.code===22 || err.code===1014);
     showToast(
       isQuota
-        ? 'Storage full, latest change not saved / 存储空间已满，最新修改未保存'
-        : "Couldn't save your change / 保存失败 (" + (err && err.message ? err.message : 'unknown error') + ')',
+        ? t('storageFull')
+        : t('storageSaveFailed', {err: (err && err.message ? err.message : 'unknown error')}),
       {error:true, duration:6000}
     );
   }
@@ -569,16 +1112,16 @@ async function runLocSearch(){
   const btn = document.getElementById('locModalSearchBtn');
   const q = input.value.trim();
   const resultsEl = document.getElementById('locModalResults');
-  if(q.length<2){ resultsEl.innerHTML = '<div style="color:#999;">Type at least 2 characters, then press Enter or tap 🔍.</div>'; return; }
+  if(q.length<2){ resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('searchMinChars'))}</div>`; return; }
   if(locSearchAbort) locSearchAbort.abort();
   locSearchAbort = new AbortController();
   btn.disabled = true;
-  resultsEl.innerHTML = '<div style="color:#999;">Searching…</div>';
+  resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('searching'))}</div>`;
   try{
     const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=6&accept-language=en,zh-CN,zh,fr,es&featureType=city`, {signal: locSearchAbort.signal});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
-    resultsEl.innerHTML = data.map(r=>`<div tabindex="0" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(r.display_name.split(',')[0])}">${escapeHtml(r.display_name)}</div>`).join('') || '<div style="color:#999;">No results — try a different spelling</div>';
+    resultsEl.innerHTML = data.map(r=>`<div tabindex="0" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(r.display_name.split(',')[0])}">${escapeHtml(r.display_name)}</div>`).join('') || `<div style="color:#999;">${escapeHtml(t('noResultsTrySpelling'))}</div>`;
     resultsEl.querySelectorAll('div[data-lat]').forEach(div=>{
       div.addEventListener('click', ()=>{
         setLocation(div.dataset.name, parseFloat(div.dataset.lat), parseFloat(div.dataset.lng));
@@ -588,7 +1131,7 @@ async function runLocSearch(){
   }catch(err){
     if(err.name==='AbortError') return;
     console.error('Location search failed:', err);
-    resultsEl.innerHTML = '<div style="color:#999;">Search failed, try again</div>';
+    resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('locSearchFailed'))}</div>`;
   }finally{
     btn.disabled = false;
   }
@@ -610,14 +1153,24 @@ if(savedLoc){
 // ============================================================
 function renderTripChips(){
   const wrap = document.getElementById('tripChips');
-  wrap.innerHTML = store.trips.map(t=>`
-    <button type="button" class="tab-chip ${t.id===store.activeTripId?'active':''}" role="tab" aria-selected="${t.id===store.activeTripId}" data-trip="${t.id}">
-      ${escapeHtml(t.name)}
-    </button>
+  wrap.innerHTML = store.trips.map(tr=>`
+    <div class="trip-chip-wrap">
+      <button type="button" class="tab-chip ${tr.id===store.activeTripId?'active':''}" role="tab" aria-selected="${tr.id===store.activeTripId}" data-trip="${tr.id}">
+        ${escapeHtml(tr.name)}
+      </button>
+      <button type="button" class="trip-edit-btn" data-trip-edit="${tr.id}" aria-label="${escapeHtml(t('renameTripAria',{name:tr.name}))}" title="${escapeHtml(t('renameTripBtnTitle'))}">✏️</button>
+    </div>
   `).join('');
   wrap.querySelectorAll('[data-trip]').forEach(btn=>{
     btn.addEventListener('click', ()=> switchTrip(btn.dataset.trip));
     btn.addEventListener('dblclick', ()=> renameTrip(btn.dataset.trip));
+  });
+  // Explicit, always-visible rename affordance — not reliant on discovering double-click.
+  wrap.querySelectorAll('[data-trip-edit]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      renameTrip(btn.dataset.tripEdit);
+    });
   });
 }
 
@@ -628,21 +1181,21 @@ function switchTrip(tripId){
 }
 
 async function renameTrip(tripId){
-  const trip = store.trips.find(t=>t.id===tripId);
+  const trip = store.trips.find(tr=>tr.id===tripId);
   const name = await openGenericModal({
-    title: 'Rename trip 重命名行程', withInput:true, inputValue: trip.name,
-    inputPlaceholder: 'Trip name', confirmText: 'Save 保存'
+    title: t('renameTripTitle'), withInput:true, inputValue: trip.name,
+    inputPlaceholder: t('renameTripPlaceholder'), confirmText: t('save')
   });
   if(name){ trip.name = name; saveStore(); renderTripChips(); }
 }
 
 document.getElementById('addTripBtn').addEventListener('click', async ()=>{
   const name = await openGenericModal({
-    title: 'New trip 新建行程', withInput:true, inputValue:'New trip',
-    inputPlaceholder: 'e.g. "Chengdu girls trip"', confirmText: 'Create 创建'
+    title: t('newTripTitle'), withInput:true, inputValue: t('newTripDefaultName'),
+    inputPlaceholder: t('newTripPlaceholder'), confirmText: t('create')
   });
   if(name === null) return;
-  const trip = newTrip(name || 'New trip');
+  const trip = newTrip(name || t('newTripDefaultName'));
   store.trips.push(trip);
   store.activeTripId = trip.id;
   saveStore();
@@ -659,51 +1212,78 @@ document.getElementById('addTripBtn').addEventListener('click', async ()=>{
 // descriptions labelled as sample data -- never an invented review or fake 小红书-style post.
 // This never runs automatically; it only loads when the button below is pressed, and it always
 // creates a brand-new trip rather than touching any existing one.
+// v0.2 demo values (STEP 2.8): each stop gets a realistic estimated visit duration, two stops
+// are marked Must Visit, and the sum of durations alone (245 min) already exceeds the day's
+// 4-hour budget before any walking time is even added — so the sample reliably demonstrates
+// Must Visit, the total-duration estimate, the budget comparison, and the removal suggestion,
+// regardless of whether the live routing service is reachable when it's loaded. These are demo
+// configuration values only, not claims about how long a real visitor would actually stay.
 const SAMPLE_TRIP_PLACES = [
   { name: 'St. Lawrence Market', lat: 43.6487389, lng: -79.3715745, category: 'Shopping',
-    notes: 'Sample note: historic public market in Toronto\'s Old Town.' },
+    notes: 'Sample note: historic public market in Toronto\'s Old Town.',
+    durationMinutes: 45, mustVisit: true },
   { name: 'Gooderham Building (Flatiron Building)', lat: 43.6483668, lng: -79.3743953, category: 'Attractions',
-    notes: 'Sample note: landmark triangular building, sometimes called the "Flatiron Building".' },
+    notes: 'Sample note: landmark triangular building, sometimes called the "Flatiron Building".',
+    durationMinutes: 15, mustVisit: false },
   { name: 'Berczy Park', lat: 43.6479844, lng: -79.3753959, category: 'Attractions',
-    notes: 'Sample note: small downtown park known for its dog-fountain sculpture.' },
+    notes: 'Sample note: small downtown park known for its dog-fountain sculpture.',
+    durationMinutes: 15, mustVisit: false },
   { name: 'Hockey Hall of Fame', lat: 43.6469964, lng: -79.3773020, category: 'Attractions',
-    notes: 'Sample note: museum dedicated to the history of ice hockey.' },
+    notes: 'Sample note: museum dedicated to the history of ice hockey.',
+    durationMinutes: 90, mustVisit: false },
   { name: "Toronto's First Post Office", lat: 43.6519613, lng: -79.3704013, category: 'Attractions',
-    notes: 'Sample note: historic post office building, now a small museum.' },
+    notes: 'Sample note: historic post office building, now a small museum.',
+    durationMinutes: 20, mustVisit: false },
   { name: 'Distillery District', lat: 43.6503278, lng: -79.3592001, category: 'Attractions',
-    notes: 'Sample note: pedestrian-only historic district with preserved industrial-era buildings.' },
+    notes: 'Sample note: pedestrian-only historic district with preserved industrial-era buildings.',
+    durationMinutes: 60, mustVisit: true },
 ];
+const SAMPLE_TRIP_DAY_BUDGET_HOURS = 4;
 
 async function loadSampleTrip(){
   const ok = await openGenericModal({
-    title: 'Load sample trip? 加载示例行程',
-    body: 'Creates a new trip, "Sample trip 示例", with 6 real Toronto Old Town landmarks so you can try the app without needing search to work. Your existing trips are never changed.',
-    confirmText: 'Load 加载', cancelText: 'Cancel 取消'
+    title: t('loadSampleTripTitle'),
+    body: t('loadSampleTripBody'),
+    confirmText: t('load'), cancelText: t('cancel')
   });
   if(!ok) return;
-  const trip = newTrip('Sample trip 示例');
+  const trip = newTrip(t('sampleTripName'));
+  trip.days[0].timeBudgetHours = SAMPLE_TRIP_DAY_BUDGET_HOURS;
   trip.pins = SAMPLE_TRIP_PLACES.map(p => ({
     id: uid(), lat: p.lat, lng: p.lng, name: p.name,
     notes: p.notes, link: '', image: '', hours: '', category: p.category,
-    day: 1, createdAt: Date.now()
+    day: 1, createdAt: Date.now(),
+    durationMinutes: p.durationMinutes, mustVisit: p.mustVisit
   }));
   store.trips.push(trip);
   store.activeTripId = trip.id;
   saveStore();
   renderAll();
-  showToast('Sample trip loaded / 示例行程已加载');
+  showToast(t('sampleTripLoaded'));
 }
 document.getElementById('sampleTripBtn').addEventListener('click', loadSampleTrip);
+
+// Formats an ISO date (YYYY-MM-DD) as a compact label like "Sep 25" for tab display.
+function formatCompactDate(iso){
+  if(!iso) return '';
+  const parts = iso.split('-').map(Number);
+  if(parts.length!==3 || parts.some(isNaN)) return iso;
+  const dt = new Date(parts[0], parts[1]-1, parts[2]);
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
 
 function renderDayChips(){
   const trip = currentTrip();
   const wrap = document.getElementById('dayChips');
   wrap.innerHTML = trip.days.map(d=>`
-    <button type="button" class="tab-chip ${trip.activeDay===d.id?'active':''}" role="tab" aria-selected="${trip.activeDay===d.id}" data-day="${d.id}">
-      Day ${d.id}${d.date ? `<span class="date-label">${d.date}</span>` : ''}
-    </button>
+    <div class="tab-chip-wrap">
+      <button type="button" class="tab-chip ${trip.activeDay===d.id?'active':''}" role="tab" aria-selected="${trip.activeDay===d.id}" data-day="${d.id}">
+        ${escapeHtml(t('dayTabLabel',{n:d.id}))}${d.date ? `<span class="date-label">${formatCompactDate(d.date)}</span>` : ''}
+      </button>
+      <button type="button" class="date-edit-btn" data-day-edit="${d.id}" aria-label="${escapeHtml(d.date ? t('editDateForDayAria',{n:d.id}) : t('addDateForDayAria',{n:d.id}))}" title="${escapeHtml(d.date ? t('editDate') : t('addDate'))}">📅</button>
+    </div>
   `).join('') + `
-    <button type="button" class="tab-chip ${trip.activeDay==='all'?'active':''}" role="tab" aria-selected="${trip.activeDay==='all'}" data-day="all">All days</button>
+    <button type="button" class="tab-chip ${trip.activeDay==='all'?'active':''}" role="tab" aria-selected="${trip.activeDay==='all'}" data-day="all">${escapeHtml(t('allDays'))}</button>
   `;
   wrap.querySelectorAll('[data-day]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -716,15 +1296,25 @@ function renderDayChips(){
       openDayModal(parseInt(btn.dataset.day,10));
     });
   });
+  // Explicit, always-visible date-edit affordance — not reliant on discovering dblclick.
+  wrap.querySelectorAll('[data-day-edit]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openDayModal(parseInt(btn.dataset.dayEdit,10));
+    });
+  });
 }
 
 let dayModalTargetId = null;
 function openDayModal(existingDayId){
   dayModalTargetId = existingDayId || null;
   const trip = currentTrip();
-  document.getElementById('dayModalTitle').textContent = existingDayId ? `Edit day ${existingDayId}` : 'Add a day';
   const existing = existingDayId ? trip.days.find(d=>d.id===existingDayId) : null;
+  document.getElementById('dayModalTitle').textContent = existingDayId
+    ? (existing && existing.date ? t('dayModalEditDateTitle',{n:existingDayId}) : t('dayModalAddDateTitle',{n:existingDayId}))
+    : t('dayModalAddTitle');
   document.getElementById('dayModalDate').value = existing ? existing.date : '';
+  document.getElementById('dayModalBudget').value = (existing && existing.timeBudgetHours != null) ? existing.timeBudgetHours : '';
   document.getElementById('dayModal').classList.remove('hidden');
 }
 document.getElementById('addDayBtn').addEventListener('click', ()=> openDayModal(null));
@@ -732,12 +1322,16 @@ document.getElementById('dayModalCancel').addEventListener('click', ()=> documen
 document.getElementById('dayModalSave').addEventListener('click', ()=>{
   const trip = currentTrip();
   const date = document.getElementById('dayModalDate').value;
+  const budgetRaw = document.getElementById('dayModalBudget').value.trim();
+  const timeBudgetHours = budgetRaw === '' ? null : Math.max(0, parseFloat(budgetRaw));
+  const safeBudget = (timeBudgetHours !== null && isNaN(timeBudgetHours)) ? null : timeBudgetHours;
   if(dayModalTargetId){
     const day = trip.days.find(d=>d.id===dayModalTargetId);
     day.date = date;
+    day.timeBudgetHours = safeBudget;
   } else {
     const nextId = trip.days.length ? Math.max(...trip.days.map(d=>d.id))+1 : 1;
-    trip.days.push({id: nextId, date});
+    trip.days.push({id: nextId, date, timeBudgetHours: safeBudget});
     trip.activeDay = nextId;
   }
   saveStore();
@@ -760,42 +1354,48 @@ document.getElementById('browseToggle').addEventListener('click', ()=>{
 // Category browse (Restaurants / Cafes / Shopping / Attractions / Bars) via Overpass API
 // ============================================================
 const CATEGORIES = [
-  {label:'🍜 Restaurants', tag:'"amenity"="restaurant"', pale:'#ffe9d1', solid:'#ff9d4d'},
-  {label:'☕ Cafes', tag:'"amenity"="cafe"', pale:'#f0e2d0', solid:'#a9754f'},
-  {label:'🛍️ Shopping', tag:'"shop"', pale:'#ffe3ed', solid:'#ff5c8a'},
-  {label:'⭐ Attractions', tag:'"tourism"~"attraction|museum|viewpoint|gallery"', pale:'#fff2cf', solid:'#ffb100'},
-  {label:'🍸 Bars', tag:'"amenity"="bar"', pale:'#ece5ff', solid:'#9b7ff0'},
+  {emoji:'🍜', key:'catRestaurants', name:'Restaurants', tag:'"amenity"="restaurant"', pale:'#ffe9d1', solid:'#ff9d4d'},
+  {emoji:'☕', key:'catCafes', name:'Cafes', tag:'"amenity"="cafe"', pale:'#f0e2d0', solid:'#a9754f'},
+  {emoji:'🛍️', key:'catShopping', name:'Shopping', tag:'"shop"', pale:'#ffe3ed', solid:'#ff5c8a'},
+  {emoji:'⭐', key:'catAttractions', name:'Attractions', tag:'"tourism"~"attraction|museum|viewpoint|gallery"', pale:'#fff2cf', solid:'#ffb100'},
+  {emoji:'🍸', key:'catBars', name:'Bars', tag:'"amenity"="bar"', pale:'#ece5ff', solid:'#9b7ff0'},
 ];
-// Plain-name + color lookup used for the persistent category field on pins (separate from
-// the emoji-labeled CATEGORIES array above, which drives nearby-browse discovery).
+// Plain-name (English, storage-stable -- pin.category is always saved/exported/matched in
+// English regardless of UI language; catLabel() in the i18n block above maps it to a translated
+// display label) + color lookup used for the persistent category field on pins.
 const CATEGORY_NAMES = [
-  ...CATEGORIES.map(c=>({name:c.label.replace(/^\S+\s/,''), pale:c.pale, solid:c.solid})),
+  ...CATEGORIES.map(c=>({name:c.name, pale:c.pale, solid:c.solid})),
   {name:'Other', pale:'#e8e8e8', solid:'#999'}
 ];
 
 const catChipsEl = document.getElementById('categoryChips');
-catChipsEl.innerHTML = CATEGORIES.map(c=>`<button type="button" data-tag='${c.tag}' data-label="${escapeHtml(c.label)}" style="background:${c.pale}" data-solid="${c.solid}" aria-pressed="false">${c.label}</button>`).join('');
-catChipsEl.querySelectorAll('button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const isActive = btn.classList.contains('active');
-    catChipsEl.querySelectorAll('button').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
-    CATEGORIES.forEach((c,i)=>{ catChipsEl.children[i].style.background = c.pale; });
-    const resultsEl = document.getElementById('categoryResults');
-    if(isActive){ resultsEl.innerHTML=''; return; }
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed','true');
-    btn.style.background = btn.dataset.solid;
-    fetchCategoryPlaces(btn.dataset.tag, btn.dataset.label);
+// Re-run on language switch (see setLang()) so the chip labels re-translate immediately.
+function renderCategoryChips(){
+  catChipsEl.innerHTML = CATEGORIES.map(c=>`<button type="button" data-tag='${c.tag}' data-cat-idx="${CATEGORIES.indexOf(c)}" style="background:${c.pale}" data-solid="${c.solid}" aria-pressed="false">${c.emoji} ${t(c.key)}</button>`).join('');
+  catChipsEl.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const isActive = btn.classList.contains('active');
+      catChipsEl.querySelectorAll('button').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+      CATEGORIES.forEach((c,i)=>{ catChipsEl.children[i].style.background = c.pale; });
+      const resultsEl = document.getElementById('categoryResults');
+      if(isActive){ resultsEl.innerHTML=''; return; }
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
+      btn.style.background = btn.dataset.solid;
+      fetchCategoryPlaces(btn.dataset.tag, CATEGORIES[parseInt(btn.dataset.catIdx,10)]);
+    });
   });
-});
+}
+renderCategoryChips();
 
-async function fetchCategoryPlaces(tag, label){
+async function fetchCategoryPlaces(tag, cat){
   const resultsEl = document.getElementById('categoryResults');
+  const label = `${cat.emoji} ${t(cat.key)}`;
   if(map.getZoom() < 12){
-    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Zoom into a neighborhood on the map first, then tap ${label} again to see nearby spots.</div>`;
+    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">${t('zoomInFirst',{label})}</div>`;
     return;
   }
-  resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Finding ${label.replace(/^\S+\s/,'')} nearby…</div>`;
+  resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">${t('findingNearby',{label:t(cat.key)})}</div>`;
   const b = map.getBounds();
   const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
   const query = `[out:json][timeout:20];(node[${tag}](${bbox});way[${tag}](${bbox}););out center 25;`;
@@ -829,27 +1429,27 @@ async function fetchCategoryPlaces(tag, label){
       .sort((a,b)=>a.dist-b.dist)
       .slice(0,20);
     if(places.length===0){
-      resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">No named spots found in this view — try zooming out slightly or panning.</div>`;
+      resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">${t('noNamedSpots')}</div>`;
       return;
     }
     resultsEl.innerHTML = places.map((p,i)=>`
       <div class="catplace">
         <span class="catname" title="${escapeHtml(p.name)}">${escapeHtml(p.name)} <span style="color:#bbb;">· ${(p.dist/1000).toFixed(1)}km${p.hours ? ' · 🕐 '+escapeHtml(p.hours) : ''}</span></span>
-        <button type="button" data-i="${i}">Pin</button>
+        <button type="button" data-i="${i}">${t('pinBtn')}</button>
       </div>
     `).join('');
-    const plainCategory = label.replace(/^\S+\s/,''); // strip the leading emoji, e.g. "Restaurants"
+    const plainCategory = cat.name; // English canonical name, for storage (never translated)
     resultsEl.querySelectorAll('button[data-i]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const p = places[btn.dataset.i];
         addPin(p.lat, p.lng, p.name, p.hours, plainCategory);
-        btn.textContent = 'Pinned ✓';
+        btn.textContent = t('pinnedCheck');
         btn.disabled = true;
       });
     });
   }catch(err){
     console.error('Category browse failed:', err);
-    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">Couldn't load nearby places — check your connection and try again.</div>`;
+    resultsEl.innerHTML = `<div style="color:#999;padding:6px 2px;">${t('categoryBrowseFailed')}</div>`;
   }
 }
 
@@ -866,7 +1466,8 @@ function addPin(lat, lng, name, hours, category){
     name: name || 'New spot',
     notes: '', link: '', image: '', hours: hours || '', category: category || '',
     day: trip.activeDay==='all' ? (trip.days[0] ? trip.days[0].id : 1) : trip.activeDay,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    mustVisit: false, durationMinutes: 60
   };
   trip.pins.push(pin);
   saveStore();
@@ -943,21 +1544,46 @@ function renderDayLabel(){
   const trip = currentTrip();
   const el = document.getElementById('dayLabel');
   if(trip.activeDay==='all'){
-    el.innerHTML = `Stops <span class="sub">· all days · ${trip.pins.length} total</span>`;
+    el.innerHTML = `${escapeHtml(t('stopsHeader'))} <span class="sub">${escapeHtml(t('stopsAllDaysSub',{n:trip.pins.length}))}</span>`;
   } else {
     const day = trip.days.find(d=>d.id===trip.activeDay);
-    el.innerHTML = `Stops <span class="sub">· Day ${trip.activeDay}${day && day.date ? ' · '+day.date : ''}</span>`;
+    el.innerHTML = `${escapeHtml(t('stopsHeader'))} <span class="sub">${escapeHtml(t('stopsDaySub',{n:trip.activeDay}))}${day && day.date ? ' · '+escapeHtml(day.date) : ''}</span>`;
   }
 }
 
+// Shows whether the current order is the automatic suggested route or a manual override,
+// with a short explanation of how to get back to Suggested mode (Recalculate route button).
+function renderRouteStatus(){
+  const el = document.getElementById('routeStatus');
+  if(!el) return;
+  const trip = currentTrip();
+  if(trip.manualOrder){
+    el.innerHTML = `<span class="status-pill manual">${escapeHtml(t('manualOrder'))}</span><span class="status-note">${escapeHtml(t('manualOrderNote'))}</span>`;
+  } else {
+    el.innerHTML = `<span class="status-pill suggested">${escapeHtml(t('suggestedRoute'))}</span>`;
+  }
+}
+
+// Preset visit-duration choices shown in each pin's "stay" select (STEP 2.3). Any non-preset
+// value already stored on a pin (rare — only possible via a hand-edited export) is added as an
+// extra selected option so it round-trips instead of silently snapping to the nearest preset.
+const DURATION_OPTIONS = [
+  {min:30, key:'durationOption30'},
+  {min:45, key:'durationOption45'},
+  {min:60, key:'durationOption60'},
+  {min:90, key:'durationOption90'},
+  {min:120, key:'durationOption120'},
+];
+
 function renderList(){
   renderDayLabel();
+  renderRouteStatus();
   const trip = currentTrip();
   const list = document.getElementById('pinlist');
   const vis = visiblePins();
   const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
   if(order.length===0){
-    list.innerHTML = `<div class="empty">No pins for this day yet. Search a place above, browse nearby, or click anywhere on the map to drop one. 🗺️</div>`;
+    list.innerHTML = `<div class="empty">${escapeHtml(t('emptyDay'))}</div>`;
     updateSummary();
     return;
   }
@@ -968,32 +1594,37 @@ function renderList(){
     return `
     <div class="pin-card" data-id="${pin.id}" draggable="true">
       <div class="idx" style="background:${PIN_COLORS[i % PIN_COLORS.length]}">${i+1}</div>
-      <div class="drag-handle" title="Drag to reorder">⠿</div>
-      <button type="button" class="remove-x" data-del="1" aria-label="Remove ${escapeHtml(pin.name)}" title="Remove this pin">✕</button>
-      <div class="pin-title"><input value="${escapeHtml(pin.name)}" data-field="name" aria-label="Place name" />${cat ? `<span class="cat-badge" style="background:${cat.pale}">${escapeHtml(cat.name)}</span>` : ''}</div>
-      <div class="reorder-row">
-        <button type="button" data-move="up" ${i===0?'disabled':''} aria-label="Move earlier in the order">▲ earlier</button>
-        <button type="button" data-move="down" ${i===order.length-1?'disabled':''} aria-label="Move later in the order">▼ later</button>
-      </div>
+      <div class="drag-handle" title="${escapeHtml(t('dragHandleTitle'))}">⠿</div>
+      <button type="button" class="remove-x" data-del="1" aria-label="${escapeHtml(t('removePinAria',{name:pin.name}))}" title="${escapeHtml(t('removePinTitle'))}">✕</button>
+      <div class="pin-title"><input value="${escapeHtml(pin.name)}" data-field="name" aria-label="${escapeHtml(t('placeNameAria'))}" /></div>
       <div class="pin-meta">
-        <span>${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}</span>
-        ${showDaySelect ? `<label>day <select data-field="day" aria-label="Move to day">${trip.days.map(d=>`<option value="${d.id}" ${d.id===pin.day?'selected':''}>${d.id}</option>`).join('')}</select></label>` : ''}
-        <label>category <select data-field="category" aria-label="Category">${catOptions.map(c=>`<option value="${escapeHtml(c)}" ${c===pin.category?'selected':''}>${c ? escapeHtml(c) : '—'}</option>`).join('')}</select></label>
+        <button type="button" class="mustvisit-btn ${pin.mustVisit?'active':''}" data-mustvisit="1" aria-pressed="${pin.mustVisit ? 'true':'false'}" title="${escapeHtml(pin.mustVisit ? t('mustVisitTitleOn') : t('mustVisitTitleOff'))}">${pin.mustVisit ? '★' : '☆'} ${escapeHtml(t('mustVisit'))}</button>
+        <span class="meta-dot">·</span>
+        <label>${escapeHtml(t('stayLabel'))} <select class="duration-select" data-field="durationMinutes" aria-label="${escapeHtml(t('stayAria'))}" title="${escapeHtml(t('stayTitle'))}">${DURATION_OPTIONS.map(o=>`<option value="${o.min}" ${o.min===pin.durationMinutes?'selected':''}>${escapeHtml(t(o.key))}</option>`).join('')}${DURATION_OPTIONS.some(o=>o.min===pin.durationMinutes) ? '' : `<option value="${pin.durationMinutes}" selected>${escapeHtml(t('durationCustomMin',{min:pin.durationMinutes}))}</option>`}</select></label>
+        <span class="meta-dot">·</span>
+        <label>${escapeHtml(t('categoryInlineLabel'))} <select class="cat-select" data-field="category" aria-label="${escapeHtml(t('categoryAria'))}" style="background:${cat ? cat.pale : 'var(--card)'}">${catOptions.map(c=>`<option value="${escapeHtml(c)}" ${c===pin.category?'selected':''}>${c ? escapeHtml(catLabel(c)) : '—'}</option>`).join('')}</select></label>
+        ${showDaySelect ? `<span class="meta-dot">·</span><label>${escapeHtml(t('dayInlineLabel'))} <select data-field="day" aria-label="${escapeHtml(t('moveToDayAria'))}">${trip.days.map(d=>`<option value="${d.id}" ${d.id===pin.day?'selected':''}>${d.id}</option>`).join('')}</select></label>` : ''}
+        <span class="meta-dot">·</span>
+        <span>🕐 ${escapeHtml(pin.hours) || escapeHtml(t('hoursNotListed'))}</span>
       </div>
-      <div class="pin-hours">🕐 ${escapeHtml(pin.hours) || 'Hours not listed'}</div>
-      <textarea placeholder="Paste your 攻略 notes here (tips, must-try items, best time to go)…" data-field="notes" aria-label="Notes for this place">${escapeHtml(pin.notes)}</textarea>
-      <input class="link" placeholder="Paste a 小红书/blog link…" value="${escapeHtml(pin.link)}" data-field="link" aria-label="Link for this place" />
-      <div class="link-hint">Link is saved only, AI does not open it / 链接仅作记录，AI 不会打开链接</div>
-      <label class="fileinput">📷 Attach a screenshot
+      <textarea placeholder="${escapeHtml(t('notesPlaceholder'))}" data-field="notes" aria-label="${escapeHtml(t('notesAria'))}">${escapeHtml(pin.notes)}</textarea>
+      <input class="link" placeholder="${escapeHtml(t('linkPlaceholder'))}" value="${escapeHtml(pin.link)}" data-field="link" aria-label="${escapeHtml(t('linkAria'))}" />
+      <div class="link-hint">${escapeHtml(t('linkHint'))}</div>
+      <label class="fileinput">${escapeHtml(t('attachScreenshot'))}
         <input type="file" style="display:block;margin-top:4px;" data-field="image" accept="image/*" />
       </label>
-      ${pin.image ? `<img class="imgprev" src="${pin.image}" alt="Attached screenshot for ${escapeHtml(pin.name)}" />` : ''}
-      <button type="button" class="ai-parse-btn" data-parse="1">✨ Parse with AI</button>
-      <div class="row">
-        <button class="navbtn gmap" data-nav="gmap">Google Maps</button>
-        <button class="navbtn amap" data-nav="amap">高德 Amap</button>
-        <button class="navbtn baidu" data-nav="baidu">百度地图</button>
-        <button class="navbtn apple" data-nav="apple">Apple Maps</button>
+      ${pin.image ? `<img class="imgprev" src="${pin.image}" alt="${escapeHtml(t('screenshotAlt',{name:pin.name}))}" />` : ''}
+      <div class="secondary-actions">
+        <button type="button" class="ai-parse-btn" data-parse="1">${escapeHtml(t('aiParseBtn'))}</button>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-toggle-btn" data-nav-toggle="1" aria-haspopup="true" aria-expanded="false">${escapeHtml(t('navigateBtn'))}</button>
+          <div class="nav-menu hidden" role="menu">
+            <button type="button" class="navbtn gmap" data-nav="gmap" role="menuitem">${escapeHtml(t('navGoogle'))}</button>
+            <button type="button" class="navbtn amap" data-nav="amap" role="menuitem">${escapeHtml(t('navAmap'))}</button>
+            <button type="button" class="navbtn baidu" data-nav="baidu" role="menuitem">${escapeHtml(t('navBaidu'))}</button>
+            <button type="button" class="navbtn apple" data-nav="apple" role="menuitem">${escapeHtml(t('navApple'))}</button>
+          </div>
+        </div>
       </div>
     </div>
   `;}).join('');
@@ -1033,6 +1664,14 @@ function renderList(){
           saveStore();
           renderList();
         });
+      } else if(field==='durationMinutes'){
+        el.addEventListener('change', (e)=>{
+          // Duration doesn't change route order/distance, only the estimated-total and budget
+          // math, so this just re-renders (no refreshRoute/network call needed).
+          pin.durationMinutes = parseInt(e.target.value, 10) || 60;
+          saveStore();
+          renderList();
+        });
       } else {
         el.addEventListener('input', (e)=>{
           pin[field] = e.target.value;
@@ -1041,8 +1680,30 @@ function renderList(){
         });
       }
     });
+    // ---- Navigate ▾ dropdown: one menu button revealing all 4 map services ----
+    const navToggleBtn = card.querySelector('[data-nav-toggle]');
+    const navMenu = card.querySelector('.nav-menu');
+    navToggleBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const isOpen = !navMenu.classList.contains('hidden');
+      closeAllNavMenus();
+      if(!isOpen){
+        navMenu.classList.remove('hidden');
+        navToggleBtn.setAttribute('aria-expanded','true');
+      }
+    });
     card.querySelectorAll('[data-nav]').forEach(btn=>{
-      btn.addEventListener('click', ()=> window.open(navUrl(btn.dataset.nav, pin), '_blank'));
+      btn.addEventListener('click', ()=>{
+        window.open(navUrl(btn.dataset.nav, pin), '_blank');
+        closeAllNavMenus();
+      });
+    });
+    card.querySelector('[data-mustvisit]').addEventListener('click', ()=>{
+      // A Must Visit pin is an explicit user constraint (STEP 2.1) — toggling it never touches
+      // route order, distance, or any other pin's data; it only flips this one flag.
+      pin.mustVisit = !pin.mustVisit;
+      saveStore();
+      renderList();
     });
     card.querySelector('[data-parse]').addEventListener('click', (e)=> parsePinWithAI(pin, e.target));
     card.querySelector('[data-del]').addEventListener('click', ()=>{
@@ -1051,19 +1712,8 @@ function renderList(){
       refreshRoute();
     });
 
-    // ---- Manual reordering: up/down buttons ----
-    card.querySelectorAll('[data-move]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const ids = order.map(p=>p.id);
-        const idx = ids.indexOf(id);
-        const swapWith = btn.dataset.move==='up' ? idx-1 : idx+1;
-        if(swapWith<0 || swapWith>=ids.length) return;
-        [ids[idx], ids[swapWith]] = [ids[swapWith], ids[idx]];
-        applyManualOrder(ids);
-      });
-    });
-
-    // ---- Manual reordering: drag and drop ----
+    // ---- Manual reordering: drag and drop (the ▲/▼ buttons were removed — drag-and-drop,
+    // via the ⠿ handle, is now the only manual override; automatic suggested routing is default) ----
     card.addEventListener('dragstart', ()=>{ dragSrcId = id; card.classList.add('dragging'); });
     card.addEventListener('dragend', ()=>{
       card.classList.remove('dragging');
@@ -1091,6 +1741,19 @@ function renderList(){
 }
 
 let dragSrcId = null;
+
+// Closes every open per-card "Navigate ▾" menu — used when opening a different one, choosing
+// an option, clicking outside any dropdown, or pressing Escape.
+function closeAllNavMenus(){
+  document.querySelectorAll('.nav-menu').forEach(m=>m.classList.add('hidden'));
+  document.querySelectorAll('[data-nav-toggle]').forEach(b=>b.setAttribute('aria-expanded','false'));
+}
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.nav-dropdown')) closeAllNavMenus();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape') closeAllNavMenus();
+});
 
 // Applies a user-chosen order (array of pin ids, in the new desired sequence) for whatever's
 // currently visible, switches the trip into manual-reorder mode so automatic optimization
@@ -1136,10 +1799,30 @@ function totalDistance(orderedPins){
   return d;
 }
 
+// Formats a minute count as compact "H hr M min" text (STEP 2.4). Always rounds to the nearest
+// whole minute — this whole feature is an estimate, never a promise of precision.
+function formatDuration(totalMinutes){
+  const m = Math.round(Math.max(0, totalMinutes));
+  if(m < 60) return t('durationMinOnly', {m});
+  const h = Math.floor(m/60), rem = m%60;
+  return rem===0 ? t('durationHrOnly', {h}) : t('durationHrMin', {h, m:rem});
+}
+
+// Set by updateSummary() with the numbers the current day's budget/removal-suggestion logic
+// needs, so those two functions don't each recompute distance/route-order from scratch.
+// null when there's nothing to estimate (no pins visible).
+let lastDayEstimate = null;
+
 function updateSummary(){
   const el = document.getElementById('summary');
   const vis = visiblePins();
-  if(vis.length===0){ el.innerHTML=''; return; }
+  if(vis.length===0){
+    el.innerHTML='';
+    lastDayEstimate = null;
+    renderBudgetStatus();
+    renderRemovalSuggestion();
+    return;
+  }
   const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
   const withGuide = order.filter(p=>p.notes || p.link || p.image).length;
 
@@ -1157,17 +1840,115 @@ function updateSummary(){
     walkMin = Math.round(dist/1000/4.5*60); // ~4.5km/h assumed walking pace
     isReal = false;
   }
-  const distTitle = isReal
-    ? 'Real walking-route distance from OSRM'
-    : 'Straight-line estimate — not an actual walking route';
-  const distLabel = isReal ? '🚶 route' : '🚶 approx';
+  const distTitle = isReal ? t('distTitleReal') : t('distTitleApprox');
+  const distQualifier = isReal ? t('distRoute') : t('distApprox');
 
+  // STEP 2.4: estimated total day duration = travel time + sum of each stop's own visit
+  // duration. If the travel portion is only a straight-line approximation (isReal:false), the
+  // total inherits that same "approximate" framing rather than implying more precision than we
+  // actually have.
+  const totalStopMin = order.reduce((sum,p)=> sum + (p.durationMinutes ?? 60), 0);
+  const totalMin = walkMin + totalStopMin;
+  lastDayEstimate = { totalMin, distKm, walkMin, isReal, order };
+
+  // All pills follow the same "value (qualifier)" pattern for a consistent read.
+  const totalDurationTitle = isReal ? t('totalDurationTitleReal') : t('totalDurationTitleApprox');
   el.innerHTML = `<div class="stat-row">
-    <span class="stat-pill" style="background:var(--pink-pale)">📍 ${vis.length} pin${vis.length>1?'s':''}</span>
-    <span class="stat-pill" style="background:var(--teal-pale)" title="${distTitle}">${distLabel} ${distKm.toFixed(1)} km</span>
-    <span class="stat-pill" style="background:var(--orange-pale)" title="${distTitle}">⏱️ ~${walkMin} min</span>
-    <span class="stat-pill" style="background:var(--yellow-pale)">📝 ${withGuide}/${order.length} have 攻略</span>
+    <span class="stat-pill" style="background:var(--pink-pale)">${escapeHtml(t(vis.length>1?'stopsCountPlural':'stopsCount',{n:vis.length}))}</span>
+    <span class="stat-pill" style="background:var(--teal-pale)" title="${escapeHtml(distTitle)}">${escapeHtml(t('distancePill',{km:distKm.toFixed(1), qualifier:distQualifier}))}</span>
+    <span class="stat-pill" style="background:var(--orange-pale)" title="${escapeHtml(distTitle)}">${escapeHtml(t('walkingMin',{min:walkMin}))}</span>
+    <span class="stat-pill" style="background:var(--yellow-pale)">${escapeHtml(t('notesCoverage',{a:withGuide, b:order.length}))}</span>
+    <span class="stat-pill" style="background:var(--purple-pale)" title="${escapeHtml(totalDurationTitle)}">${escapeHtml(t('totalDurationPill',{total:formatDuration(totalMin)}))}</span>
   </div>`;
+
+  renderBudgetStatus();
+  renderRemovalSuggestion();
+}
+
+// STEP 2.4/2.5: shows the day's time budget against the estimated plan, and a plain-language
+// over/fits message. Budget is per-day (STEP 2.2), so this only ever applies to a single active
+// day — "All days" has no single budget to compare against, so nothing is shown there. This is
+// decision support only: it never changes the itinerary itself.
+function renderBudgetStatus(){
+  const el = document.getElementById('budgetStatus');
+  if(!el) return;
+  const trip = currentTrip();
+  if(trip.activeDay==='all' || !lastDayEstimate){ el.innerHTML=''; el.className=''; return; }
+  const day = trip.days.find(d=>d.id===trip.activeDay);
+  if(!day || day.timeBudgetHours===null || day.timeBudgetHours===undefined){ el.innerHTML=''; el.className=''; return; }
+  const budgetMin = day.timeBudgetHours*60;
+  const budgetLabel = formatDuration(budgetMin);
+  const planLabel = `~${formatDuration(lastDayEstimate.totalMin)}`;
+  const diff = lastDayEstimate.totalMin - budgetMin;
+  if(diff > 0.5){
+    el.className = 'budget-status over';
+    el.innerHTML = escapeHtml(t('budgetLineOver', {budget:budgetLabel, plan:planLabel, diff:formatDuration(diff)}))
+      + `<span class="budget-line">${escapeHtml(t('budgetOverMsg', {diff:formatDuration(diff), budget:budgetLabel}))}</span>`;
+  } else {
+    el.className = 'budget-status fits';
+    const remaining = Math.max(0, -diff);
+    el.innerHTML = escapeHtml(t('budgetLineFits', {budget:budgetLabel, plan:planLabel, remaining:formatDuration(remaining)}))
+      + `<span class="budget-line">${escapeHtml(t('budgetFitsMsg', {budget:budgetLabel}))}</span>`;
+  }
+}
+
+// STEP 2.6 (stretch): when the day is over budget, suggest ONE non-Must-Visit stop to consider
+// dropping. This is a plain rule-based heuristic (not AI, and never described as one): for each
+// candidate stop, estimate the route detour it causes (how much shorter the path would be
+// without it, via the haversine distance to/from its neighbors — always an approximation, since
+// re-querying the real routing service for every candidate isn't done here) plus its own visit
+// duration, and surface whichever candidate saves the most estimated time. It only ever
+// *suggests* — removal requires an explicit confirmed click, and a Must Visit pin is never a
+// candidate.
+let lastSuggestedRemovalPinId = null;
+function renderRemovalSuggestion(){
+  const el = document.getElementById('removalSuggestion');
+  if(!el) return;
+  el.innerHTML = '';
+  lastSuggestedRemovalPinId = null;
+  const trip = currentTrip();
+  if(trip.activeDay==='all' || !lastDayEstimate) return;
+  const day = trip.days.find(d=>d.id===trip.activeDay);
+  if(!day || day.timeBudgetHours===null || day.timeBudgetHours===undefined) return;
+  const budgetMin = day.timeBudgetHours*60;
+  if(lastDayEstimate.totalMin <= budgetMin) return; // only offer this when actually over budget
+
+  const order = lastDayEstimate.order;
+  const candidates = order.map((p,i)=>{
+    if(p.mustVisit) return null; // never suggest removing an explicit user constraint
+    const prev = order[i-1], next = order[i+1];
+    let detourM = 0;
+    if(prev && next) detourM = haversine(prev,p) + haversine(p,next) - haversine(prev,next);
+    else if(prev) detourM = haversine(prev,p);
+    else if(next) detourM = haversine(p,next);
+    const detourMin = Math.max(0, detourM) / 1000 / 4.5 * 60; // ~4.5km/h, same assumed pace used elsewhere
+    const savedMin = detourMin + (p.durationMinutes ?? 60);
+    return { pin:p, savedMin };
+  }).filter(Boolean);
+  if(candidates.length===0) return; // e.g. everything visible today is marked Must Visit
+
+  candidates.sort((a,b)=> b.savedMin - a.savedMin);
+  const best = candidates[0];
+  lastSuggestedRemovalPinId = best.pin.id;
+
+  el.innerHTML = `<div class="removal-suggestion">
+    <span>${t('removalSuggestionText', {name:escapeHtml(best.pin.name), saved:formatDuration(best.savedMin)})}</span>
+    <button type="button" id="removalConfirmBtn">${escapeHtml(t('removeFromDay'))}</button>
+  </div>`;
+  document.getElementById('removalConfirmBtn').addEventListener('click', async ()=>{
+    const targetId = lastSuggestedRemovalPinId;
+    const targetPin = order.find(p=>p.id===targetId);
+    const ok = await openGenericModal({
+      title: t('removeStopTitle'),
+      body: t('removeStopBody', {name: targetPin ? targetPin.name : ''}),
+      confirmText: t('remove'), cancelText: t('cancel')
+    });
+    if(!ok) return;
+    const trip2 = currentTrip();
+    trip2.pins = trip2.pins.filter(p=>p.id!==targetId);
+    saveStore();
+    refreshRoute();
+  });
 }
 
 // Draws the walking route. STEP 1.6 verified (with live network tests, not assumed) that
@@ -1241,7 +2022,7 @@ function clearRouteLine(){
 // optimizer.
 document.getElementById('optimizeBtn').addEventListener('click', async ()=>{
   const vis = visiblePins();
-  if(vis.length<2){ showToast('Add at least 2 pins first / 至少添加 2 个地点'); return; }
+  if(vis.length<2){ showToast(t('addAtLeast2Pins')); return; }
   currentTrip().manualOrder = false;
   saveStore();
   await refreshRoute(true); // explicit "Recalculate route" press -- OK to re-frame (STEP 1.5)
@@ -1251,10 +2032,10 @@ document.getElementById('clearAllBtn').addEventListener('click', async ()=>{
   const trip = currentTrip();
   const scoped = trip.activeDay !== 'all';
   const body = scoped
-    ? `Remove all pins from Day ${trip.activeDay}? This cannot be undone.`
-    : 'Remove ALL pins from this entire trip? This cannot be undone.';
+    ? t('clearDayBodyScoped', {n:trip.activeDay})
+    : t('clearDayBodyAll');
   const ok = await openGenericModal({
-    title: 'Clear this day 清空', body, confirmText: 'Clear 清空', cancelText: 'Cancel 取消'
+    title: t('clearThisDay'), body, confirmText: t('clear'), cancelText: t('cancel')
   });
   if(!ok) return;
   trip.pins = scoped ? trip.pins.filter(p=>p.day!==trip.activeDay) : [];
@@ -1287,11 +2068,11 @@ async function runPlaceSearch(){
   const btn = document.getElementById('searchBtn');
   const q = input.value.trim();
   const resultsEl = document.getElementById('searchResults');
-  if(q.length<2){ resultsEl.innerHTML = '<div style="color:#999;">Type at least 2 characters, then press Enter or tap 🔍.</div>'; return; }
+  if(q.length<2){ resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('searchMinChars'))}</div>`; return; }
   if(placeSearchAbort) placeSearchAbort.abort();
   placeSearchAbort = new AbortController();
   btn.disabled = true;
-  resultsEl.innerHTML = '<div style="color:#999;">Searching…</div>';
+  resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('searching'))}</div>`;
   try{
     // accept-language goes in the querystring, not a request header — a custom header
     // forces a CORS preflight (OPTIONS) request that Nominatim doesn't handle, which is
@@ -1309,7 +2090,7 @@ async function runPlaceSearch(){
     resultsEl.innerHTML = data.map(r=>{
       const hours = r.extratags && r.extratags.opening_hours;
       return `<div tabindex="0" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(r.display_name.split(',')[0])}" data-hours="${escapeHtml(hours||'')}">${escapeHtml(r.display_name)}${hours ? `<br><span style="color:#999;font-size:10.5px;">🕐 ${escapeHtml(hours)}</span>` : ''}</div>`;
-    }).join('') || '<div style="color:#999;">No results in this area — try zooming the map out, rewording your search, or picking a different city from the badge above</div>';
+    }).join('') || `<div style="color:#999;">${escapeHtml(t('searchNoResults'))}</div>`;
     resultsEl.querySelectorAll('div[data-lat]').forEach(div=>{
       div.addEventListener('click', ()=>{
         const lat=parseFloat(div.dataset.lat), lng=parseFloat(div.dataset.lng);
@@ -1321,7 +2102,7 @@ async function runPlaceSearch(){
   }catch(err){
     if(err.name==='AbortError') return; // superseded by a newer search — say nothing
     console.error('Place search failed:', err);
-    resultsEl.innerHTML = '<div style="color:#999;">Search failed — check your internet connection, or try again in a moment</div>';
+    resultsEl.innerHTML = `<div style="color:#999;">${escapeHtml(t('searchFailed'))}</div>`;
   }finally{
     btn.disabled = false;
   }
@@ -1348,11 +2129,11 @@ function updateAiModeLabel(){
   const el = document.getElementById('aiModeLabel');
   if(!el) return;
   if(aiConfig.key){
-    el.textContent = 'AI Mode';
+    el.textContent = t('aiModeLabel');
     el.style.background = 'var(--teal)';
     el.style.color = '#fff';
   } else {
-    el.textContent = 'Local Mode';
+    el.textContent = t('localModeLabel');
     el.style.background = '#e8e0d2';
     el.style.color = 'var(--muted)';
   }
@@ -1365,9 +2146,7 @@ document.getElementById('aiToggle').addEventListener('click', ()=>{
   if(panel.classList.contains('open')){
     renderAiTips();
     if(chatHistory.length===0){
-      addChatMessage('bot', aiConfig.key
-        ? "Hi! AI Mode is on — ask me anything about this day's plan, or paste a 攻略/description and I'll help you turn it into pins."
-        : "Hi! I'm the Local Trip Helper right now (no real AI connected, just distance/timing heuristics over your pins) — I can answer questions about distance, timing, and which pins still need notes. Tap ⚙️ above to connect a real AI with your own API key for open-ended help (AI Mode).");
+      addChatMessage('bot', aiConfig.key ? t('aiModeGreeting') : t('localModeGreeting'));
     }
   }
 });
@@ -1388,7 +2167,7 @@ document.getElementById('aiKeySave').addEventListener('click', ()=>{
   sessionStorage.setItem(AI_KEY_STORE, JSON.stringify(aiConfig));
   document.getElementById('aiSettings').classList.remove('open');
   updateAiModeLabel();
-  addChatMessage('bot', key ? `Connected to ${provider==='openai'?'OpenAI':'Anthropic'} — AI Mode is on. Ask away!` : 'Switched back to the Local Trip Helper (no key saved).');
+  addChatMessage('bot', key ? t('connectedToProvider', {provider: provider==='openai'?'OpenAI':'Anthropic'}) : t('switchedToLocal'));
 });
 
 function addChatMessage(role, text){
@@ -1419,7 +2198,7 @@ document.getElementById('chatForm').addEventListener('submit', async (e)=>{
   }catch(err){
     console.error('AI assistant failed:', err);
     const providerLabel = aiConfig.provider === 'openai' ? 'OpenAI' : aiConfig.provider === 'anthropic' ? 'Anthropic' : 'AI provider';
-    reply = `Couldn't reach ${providerLabel} (${err && err.message ? err.message : 'unknown error'}) — check your API key or connection. Here's a local answer instead: ` + answerLocally(question);
+    reply = t('aiCouldNotReachPrefix', {provider: providerLabel, err: (err && err.message ? err.message : 'unknown error')}) + answerLocally(question);
   }
   thinking.remove();
   addChatMessage('bot', reply);
@@ -1431,38 +2210,38 @@ function answerLocally(q){
   const ql = q.toLowerCase();
   const vis = visiblePins();
   const order = routeOrder ? routeOrder.map(id=>vis.find(p=>p.id===id)).filter(Boolean) : vis;
-  if(order.length===0) return "There aren't any pins on this day yet — search, browse nearby, or click the map to add some first.";
+  if(order.length===0) return t('chatEmptyDay');
   if(/how (far|long)|distance|km|time|walk/.test(ql)){
     if(lastRouteMeta && order.length>=2){
       const distKm = (lastRouteMeta.distanceM/1000).toFixed(1);
       const walkMin = Math.round(lastRouteMeta.durationS/60);
-      const kind = lastRouteMeta.isReal ? 'a real walking route' : 'a straight-line estimate (routing service was unavailable)';
-      return `This day covers about ${distKm}km, roughly ${walkMin} minutes of walking between stops (not counting time spent at each place) — based on ${kind}.`;
+      const kind = lastRouteMeta.isReal ? t('chatKindReal') : t('chatKindApprox');
+      return t('chatDistanceReal', {km:distKm, min:walkMin, kind});
     }
     const dist = totalDistance(order);
     const walkMin = Math.round(dist/1000/4.5*60);
-    return `This day covers about ${(dist/1000).toFixed(1)}km (straight-line estimate), roughly ${walkMin} minutes of walking between stops (not counting time spent at each place).`;
+    return t('chatDistanceApprox', {km:(dist/1000).toFixed(1), min:walkMin});
   }
   if(/far|outlier|separate|detour|skip/.test(ql)){
     const centroid = {lat: order.reduce((s,p)=>s+p.lat,0)/order.length, lng: order.reduce((s,p)=>s+p.lng,0)/order.length};
     const far = order.map(p=>({p, d: haversine(p,centroid)/1000})).sort((a,b)=>b.d-a.d)[0];
-    return far.d>1.5 ? `"${far.p.name}" is the furthest from the rest of today's pins (~${far.d.toFixed(1)}km from the group). Might be worth a separate trip.` : "Your pins today are all reasonably close together — no obvious outlier.";
+    return far.d>1.5 ? t('chatOutlier', {name:far.p.name, km:far.d.toFixed(1)}) : t('chatNoOutlier');
   }
   if(/order|route|sequence|first|next|visit/.test(ql)){
-    return "Suggested order: " + order.map((p,i)=>`${i+1}. ${p.name}`).join('  →  ');
+    return t('chatSuggestedOrder') + order.map((p,i)=>`${i+1}. ${p.name}`).join('  →  ');
   }
   if(/missing|notes|攻略|link|guide/.test(ql)){
     const missing = order.filter(p=>!p.notes && !p.link);
-    return missing.length===0 ? "Every pin today has notes or a link attached — nice." : `Still missing 攻略 for: ${missing.map(p=>p.name).join(', ')}.`;
+    return missing.length===0 ? t('chatAllNotesGood') : t('chatMissingNotesFor', {names: missing.map(p=>p.name).join(', ')});
   }
   if(/hour|open|close/.test(ql)){
     const withHours = order.filter(p=>p.hours);
-    return withHours.length===0 ? "None of today's pins have opening hours on file yet — try re-adding them via search or nearby browse, which pull hours when available." : withHours.map(p=>`${p.name}: ${p.hours}`).join('\n');
+    return withHours.length===0 ? t('chatNoHoursYet') : withHours.map(p=>`${p.name}: ${p.hours}`).join('\n');
   }
   if(/help|what can you/.test(ql)){
-    return "I can tell you: total walking distance/time, which pin is furthest from the rest, the suggested visiting order, which pins are missing 攻略, and opening hours where I have them. For open-ended research (like reading a pasted 攻略 or answering 'which is better'), connect a real AI key via the ⚙️ settings.";
+    return t('chatHelp');
   }
-  return "I'm just a local heuristic assistant right now, so I mainly answer questions about distance, order, missing notes, and hours. Try asking one of those, or connect a real AI key (⚙️ above) for open-ended help.";
+  return t('chatFallback');
 }
 
 // Calls the user's own OpenAI or Anthropic API directly from the browser using their saved
@@ -1526,26 +2305,26 @@ async function askRealAI(question){
 // ============================================================
 async function parsePinWithAI(pin, btn){
   if(!pin.link && !pin.notes && !pin.image){
-    showToast('Attach a link, notes, or a screenshot first / 请先添加链接、笔记或截图');
+    showToast(t('attachFirst'));
     return;
   }
   if(!aiConfig.key){
-    showToast("Connect an AI key first (tap 💬 then ⚙️) to turn on AI Mode / 请先连接 AI 密钥", {duration:6000});
+    showToast(t('connectAiFirst'), {duration:6000});
     return;
   }
   const original = btn.textContent;
-  btn.textContent = 'Thinking…';
+  btn.textContent = t('thinking');
   btn.disabled = true;
   try{
     const result = await parseWithProvider(pin);
     if(!result || (!result.name && !result.notes)){
-      showToast("Couldn't pull a clear suggestion — try adding more text or a clearer screenshot / 未获得有效建议", {error:true, duration:6000});
+      showToast(t('noClearSuggestion'), {error:true, duration:6000});
       return;
     }
-    const body = `Suggested name: ${result.name || '(keep current)'}\n\nSuggested notes: ${result.notes || '(none)'}`;
+    const body = t('suggestedNameLine', {name: result.name || t('keepCurrent')}) + '\n\n' + t('suggestedNotesLine', {notes: result.notes || t('none')});
     const apply = await openGenericModal({
-      title: 'Apply AI suggestion? AI 建议', body,
-      confirmText: 'Apply 应用', cancelText: 'Cancel 取消'
+      title: t('applyAiSuggestionTitle'), body,
+      confirmText: t('apply'), cancelText: t('cancel')
     });
     if(apply){
       if(result.name) pin.name = result.name;
@@ -1556,7 +2335,7 @@ async function parsePinWithAI(pin, btn){
   }catch(err){
     console.error('AI parse failed:', err);
     const providerLabel = aiConfig.provider === 'openai' ? 'OpenAI' : aiConfig.provider === 'anthropic' ? 'Anthropic' : 'AI provider';
-    showToast(`Couldn't reach ${providerLabel} (${err && err.message ? err.message : 'unknown error'}) / 连接失败`, {error:true, duration:6500});
+    showToast(t('aiParseFailed', {provider: providerLabel, err: (err && err.message ? err.message : 'unknown error')}), {error:true, duration:6500});
   }finally{
     btn.textContent = original;
     btn.disabled = false;
@@ -1620,7 +2399,7 @@ function renderAiTips(){
   const body = document.getElementById('aiTips');
   const order0 = visiblePins();
   if(order0.length===0){
-    body.innerHTML = `<div class="tip">Add a few pins to this day and I'll help you spot clusters, outliers, and rough timing.</div>`;
+    body.innerHTML = `<div class="tip">${escapeHtml(t('aiTipsEmpty'))}</div>`;
     return;
   }
   const order = routeOrder ? routeOrder.map(id=>order0.find(p=>p.id===id)).filter(Boolean) : order0;
@@ -1631,22 +2410,22 @@ function renderAiTips(){
   };
   order.forEach(p=>{
     const d = haversine(p, centroid)/1000;
-    if(d>3) tips.push(`"${escapeHtml(p.name)}" is ~${d.toFixed(1)}km from the rest of today's pins — consider moving it to another day or check if it's worth the detour.`);
+    if(d>3) tips.push(t('aiTipOutlier', {name:escapeHtml(p.name), km:d.toFixed(1)}));
   });
   if(order.length>=2){
     let distKm, walkMin, approxNote;
     if(lastRouteMeta){
       distKm = lastRouteMeta.distanceM/1000; walkMin = Math.round(lastRouteMeta.durationS/60);
-      approxNote = lastRouteMeta.isReal ? '' : ' (straight-line estimate)';
+      approxNote = lastRouteMeta.isReal ? '' : t('aiTipApproxNote');
     } else {
       const dist = totalDistance(order);
-      distKm = dist/1000; walkMin = Math.round(dist/1000/4.5*60); approxNote = ' (straight-line estimate)';
+      distKm = dist/1000; walkMin = Math.round(dist/1000/4.5*60); approxNote = t('aiTipApproxNote');
     }
-    tips.push(`This day covers ~${distKm.toFixed(1)}km${approxNote}, about ${walkMin} min of walking. Budget roughly ${Math.round(walkMin/60*10)/10}–${Math.round((walkMin+order.length*30)/60*10)/10} hrs total.`);
+    tips.push(t('aiTipDistanceSummary', {km:distKm.toFixed(1), approxNote, min:walkMin, low:Math.round(walkMin/60*10)/10, high:Math.round((walkMin+order.length*30)/60*10)/10}));
   }
   const missingNotes = order.filter(p=>!p.notes && !p.link).length;
-  if(missingNotes>0) tips.push(`${missingNotes} pin${missingNotes>1?'s':''} still ${missingNotes>1?'have':'has'} no 攻略 attached.`);
-  if(tips.length===0) tips.push(`Looks good — today's pins are reasonably clustered and each has notes attached.`);
+  if(missingNotes>0) tips.push(t(missingNotes>1?'aiTipMissingNotesMany':'aiTipMissingNotesOne', {n:missingNotes}));
+  if(tips.length===0) tips.push(t('aiTipAllGood'));
   body.innerHTML = tips.slice(0,3).map(t=>`<div class="tip">${t}</div>`).join('');
 }
 
