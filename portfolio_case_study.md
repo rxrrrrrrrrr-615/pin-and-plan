@@ -28,11 +28,15 @@ A single-page web app where you can:
 
 - Search or drop pins on a map (OpenStreetMap-based, works globally, not just in one country)
 - Browse nearby places by category (restaurants, cafes, shops, attractions) pulled live from OpenStreetMap
-- Attach notes, a link, and a screenshot to each pin as a ready-to-use guide
+- Attach notes, a link, and a screenshot to each pin as a ready-to-use guide, with an optional AI-assisted parse (via a user-supplied OpenAI/Anthropic key, including vision for screenshots) that suggests a cleaned-up name and summary
 - Get pins automatically reordered into an efficient walking route (nearest-neighbor optimization, redrawn live as pins are added, moved, or removed)
 - Organize pins across multiple days and multiple separate trips
-- Jump straight into Google Maps, Amap, or Baidu Maps for actual turn-by-turn navigation
+- Jump straight into Google Maps, Amap, Baidu Maps, or Apple Maps for actual turn-by-turn navigation
 - Ask a built-in trip assistant questions about the plan (distance, timing, what's missing), with an optional bring-your-own-key connection to a real AI for open-ended help
+
+## Validated learnings
+
+Tested informally with the builder and 3–5 friends, family members, and peers. Testers understood the product's value quickly, especially the unified map and the attach-research workflow. Feedback surfaced four consistent gaps: booking integration, map interaction polish, collaborative planning, and more user control over route optimization. Framed honestly: this validates comprehension of the concept, not product-market fit or retention.
 
 ## Design decisions worth calling out
 
@@ -43,7 +47,7 @@ A single-page web app where you can:
 
 ## What I'd do next
 
-Documented in the full PRD: cross-device sync via a real account system, native Amap/Baidu search for better China-market place data, and testing with a small group of friends before considering any wider launch.
+Two confirmed next priorities, both documented in the full PRD: user-controlled route optimization constraints (fixed times, must-visit places, travel mode, pace, opening hours, reservation times), and collaborative planning so companions can contribute and edit a shared trip without overwriting each other, which requires moving from per-browser local storage to a real account and shared-backend model. Further out: addressing the booking-integration signal from testers, map interaction polish, and native Amap/Baidu search for better China-market place data.
 
 ## Tech stack
 
